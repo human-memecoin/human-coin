@@ -24,7 +24,7 @@ body {
     width: 80%;
     max-width: 600px;
     position: relative;
-    top: -10%; /* Move the box up by 10% */
+    top: -25%; /* Move the box up by 10% */
 }
 
 .content {
