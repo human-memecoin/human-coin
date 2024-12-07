@@ -1,0 +1,83 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: url('background.png') no-repeat center center fixed;
+    background-size: 100%; /* Zoom out by increasing size percentage */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+    text-align: center;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    top: -10%; /* Move the box up by 10% */
+}
+
+.content {
+    position: relative;
+}
+
+.logo h1 {
+    font-size: 3em;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: black; /* Changed color to black */
+    text-shadow: 0px 2px 4px rgba(255, 255, 255, 0.8); /* Slight white text-shadow for readability */
+}
+
+.tagline {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-links a {
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(45deg, #32CD32, #4CAF50);
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-links a:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0);
+}
+
+.buy-now {
+    margin-top: 20px;
+    background: linear-gradient(45deg, #32CD32, #4CAF50);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.buy-now:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
