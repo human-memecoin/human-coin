@@ -3,23 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Meme Coin</title>
-    <link rel="stylesheet" href="style.css">
+    <title>THE ESSENTIALS COLLECTION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: #fff;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px;
+            flex: 1;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 250px;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .card img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 15px;
+        }
+        .card h2 {
+            margin: 10px 0;
+            font-size: 1.5rem;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+        }
+        a {
+            color: #4caf50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>THE ESSENTIALS COLLECTION</h1>
+        <p id="greeting"></p>
+    </header>
     <div class="container">
-        <div class="content">
-            <div class="logo">
-                <h1>HUMAN</h1>
-            </div>
-            <p class="tagline">Join the meme revolution with HUMAN Coin!</p>
-            <div class="social-links">
-                <a href="https://x.com/HUMAN__coin" target="_blank">Twitter</a>
-                <a href="https://t.me/HUMAN_memecoin/1" target="_blank">Telegram</a>
-                <a href="https://www.instagram.com/human_memecoin/" target="_blank">Instagram</a>
-            </div>
-            <button class="buy-now">Buy Now</button>
+        <div class="card">
+            <img src="air-icon.webp" alt="Air">
+            <h2>$Air</h2>
+            <p><a href="air.html">Learn More</a></p>
+        </div>
+        <div class="card">
+            <img src="water-icon.webp" alt="Water">
+            <h2>$Water</h2>
+            <p><a href="water.html">Learn More</a></p>
+        </div>
+        <div class="card">
+            <img src="food-icon.webp" alt="Food">
+            <h2>$Food</h2>
+            <p><a href="food.html">Learn More</a></p>
+        </div>
+        <div class="card">
+            <img src="shelter-icon.jpg" alt="Shelter">
+            <h2>$Shelter</h2>
+            <p><a href="shelter.html">Learn More</a></p>
         </div>
     </div>
+    <footer>
+        <p>&copy; 2024 THE ESSENTIALS COLLECTION. All Rights Reserved. </p>
+    </footer>
+    <script>
+        // Dynamic Greeting Based on Time of Day
+        const greeting = document.getElementById('greeting');
+        const hour = new Date().getHours();
+        if (hour < 12) {
+            greeting.textContent = 'Good Morning! Discover the essentials of $human.';
+        } else if (hour < 18) {
+            greeting.textContent = 'Good Afternoon! Explore our $human collection.';
+        } else {
+            greeting.textContent = 'Good Evening! Learn about the essentials of $human.';
+        }
+    </script>
 </body>
 </html>
