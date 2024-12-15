@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>THE ESSENTIALS COLLECTION</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="description" content="Discover the essentials of life: Human, Air, Water, Food, and Shelter. Explore our collection and learn about the fundamentals of existence.">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -73,24 +75,20 @@
             border-color: gold;
         }
         .air-card {
-            background: #2F4F4F;
+            background: #446e84;
             color: #fff;
-            animation: fadeIn 1.5s;
         }
         .water-card {
-            background: #1E90FF;
+            background: #3baca8;
             color: #fff;
-            animation: fadeIn 1.5s;
         }
         .food-card {
             background: #8B4513;
             color: #fff;
-            animation: fadeIn 1.5s;
         }
         .shelter-card {
-            background: #228B22;
+            background: #1a241b;
             color: #fff;
-            animation: fadeIn 1.5s;
         }
         @keyframes thunder {
             0%, 100% {
@@ -100,18 +98,35 @@
                 box-shadow: 0 4px 25px rgba(255, 215, 0, 1);
             }
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin-top: auto;
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+        }
+        .population-counter {
+            text-align: center;
+            margin: 40px 0;
+            font-size: 1.5rem;
+            color: #fff;
+            font-weight: bold;
         }
         a {
             color: #4caf50;
             text-decoration: none;
             font-weight: bold;
+        }
+        .social-icons {
+            margin-top: 10px;
+        }
+        .social-icons img {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
         }
     </style>
 </head>
@@ -122,45 +137,75 @@
     </header>
     <div class="container">
         <div class="card human-card">
-            <img src="stick-figure1.png" alt="Human">
+            <img src="stick-figure1.png" alt="Stick figure representing a human">
             <h2>$Human</h2>
             <p>Contract: Coming Soon</p>
         </div>
         <div class="card air-card">
-            <img src="air-icon.webp" alt="Air">
+            <img src="air-icon.webp" alt="Icon representing air">
             <h2>$Air</h2>
             <p>Contract: Coming Soon</p>
         </div>
         <div class="card water-card">
-            <img src="water-icon.webp" alt="Water">
+            <img src="water-icon.webp" alt="Icon representing water">
             <h2>$Water</h2>
             <p>Contract: Coming Soon</p>
         </div>
         <div class="card food-card">
-            <img src="food-icon.webp" alt="Food">
+            <img src="food-icon.webp" alt="Icon representing food">
             <h2>$Food</h2>
             <p>Contract: Coming Soon</p>
         </div>
         <div class="card shelter-card">
-            <img src="shelter-icon.jpg" alt="Shelter">
+            <img src="shelter-icon.jpg" alt="Icon representing shelter">
             <h2>$Shelter</h2>
             <p>Contract: Coming Soon</p>
         </div>
     </div>
+    <div class="population-counter">
+        Current World Population: <span id="population">Loading...</span>
+    </div>
     <footer>
-        <p>&copy; 2024 THE ESSENTIALS COLLECTION. All Rights Reserved. </p>
+        <p>&copy; 2024 THE ESSENTIALS COLLECTION. All Rights Reserved.</p>
+        <div class="social-icons">
+            <a href="https://telegram.org" target="_blank"><img src="telegram-icon.png" alt="Telegram"></a>
+            <a href="https://x.com" target="_blank"><img src="twitter-icon.png" alt="X"></a>
+        </div>
     </footer>
     <script>
         // Dynamic Greeting Based on Time of Day
         const greeting = document.getElementById('greeting');
         const hour = new Date().getHours();
+        const items = ['$Human', '$Air', '$Water', '$Food', '$Shelter'];
+        const randomItem = items[Math.floor(Math.random() * items.length)];
         if (hour < 12) {
-            greeting.textContent = 'Good Morning! Discover the essentials of $human.';
+            greeting.textContent = `Good Morning! Discover the essentials of ${randomItem}.`;
         } else if (hour < 18) {
-            greeting.textContent = 'Good Afternoon! Explore our $human collection.';
+            greeting.textContent = `Good Afternoon! Explore our ${randomItem} collection.`;
         } else {
-            greeting.textContent = 'Good Evening! Learn about the essentials of $human.';
+            greeting.textContent = `Good Evening! Learn about the essentials of ${randomItem}.`;
         }
+
+        // World Population Counter
+        const populationElement = document.getElementById('population');
+
+        async function updatePopulation() {
+            try {
+                const response = await fetch('https://get-population.p.rapidapi.com/population/country?country=Egypt', {
+                    method: 'GET',
+                    headers: {
+                        'X-RapidAPI-Key': 'ce8663fc72mshdb833658877f0a2p1f52e3jsn880ffb4e6554',
+                        'X-RapidAPI-Host': 'get-population.p.rapidapi.com'
+                    }
+                });
+                const data = await response.json();
+                populationElement.textContent = data.body.world_population.toLocaleString();
+            } catch (error) {
+                populationElement.textContent = 'Unavailable';
+            }
+        }
+
+        updatePopulation();
     </script>
 </body>
 </html>
