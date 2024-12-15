@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Essentials Collections</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            background: #3e8e41;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #4caf50;
+        }
+        .collections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .collection-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .collection-card img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .collection-card h3 {
+            margin: 15px 0;
+            color: #333;
+        }
+        footer {
+            background: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Human Essentials Collections</h1>
+        <p>Explore the fundamental elements of human life through collectible themes.</p>
+    </header>
+
+    <nav>
+        <a href="#physical">Physical Needs</a>
+        <a href="#health">Health & Well-being</a>
+        <a href="#social">Social Connection</a>
+        <a href="#mental">Mental & Emotional Needs</a>
+        <a href="#freedom">Freedom & Autonomy</a>
+        <a href="#hope">Hope & Resilience</a>
+    </nav>
+
+    <div class="container">
+        <section id="physical" class="section">
+            <h2>Physical Needs</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="air.jpg" alt="Air">
+                    <h3>Air Tokens</h3>
+                    <p>Experience the essence of clean oxygen through artistic designs.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="water.jpg" alt="Water">
+                    <h3>Water Tokens</h3>
+                    <p>Stay hydrated with representations of life’s most vital resource.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="food.jpg" alt="Food">
+                    <h3>Food Tokens</h3>
+                    <p>Nourishment reimagined with vibrant and delicious designs.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="shelter.jpg" alt="Shelter">
+                    <h3>Shelter Tokens</h3>
+                    <p>Explore diverse forms of protection and comfort.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="health" class="section">
+            <h2>Health & Well-being</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="sleep.jpg" alt="Sleep">
+                    <h3>Sleep Tokens</h3>
+                    <p>Embrace rest with dreamy and serene designs.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="exercise.jpg" alt="Exercise">
+                    <h3>Exercise Tokens</h3>
+                    <p>Celebrate movement and vitality with fitness-inspired tokens.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="healthcare.jpg" alt="Healthcare">
+                    <h3>Healthcare Tokens</h3>
+                    <p>Symbols of care, prevention, and healing.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="social" class="section">
+            <h2>Social Connection</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="relationships.jpg" alt="Relationships">
+                    <h3>Relationships Tokens</h3>
+                    <p>Celebrate bonds with symbols of love and connection.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="belonging.jpg" alt="Belonging">
+                    <h3>Belonging Tokens</h3>
+                    <p>Showcase the warmth of community and shared purpose.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mental" class="section">
+            <h2>Mental & Emotional Needs</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="purpose.jpg" alt="Purpose">
+                    <h3>Purpose Tokens</h3>
+                    <p>Discover meaning with inspirational symbols.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="safety.jpg" alt="Safety">
+                    <h3>Safety Tokens</h3>
+                    <p>Feel secure with protective and comforting designs.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="expression.jpg" alt="Expression">
+                    <h3>Expression Tokens</h3>
+                    <p>Celebrate creativity and self-expression.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="freedom" class="section">
+            <h2>Freedom & Autonomy</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="choice.jpg" alt="Choice">
+                    <h3>Choice Tokens</h3>
+                    <p>Embrace the power of decision and independence.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="opportunity.jpg" alt="Opportunity">
+                    <h3>Opportunity Tokens</h3>
+                    <p>Highlight paths to growth and success.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="hope" class="section">
+            <h2>Hope & Resilience</h2>
+            <div class="collections">
+                <div class="collection-card">
+                    <img src="optimism.jpg" alt="Optimism">
+                    <h3>Optimism Tokens</h3>
+                    <p>Brighten your day with symbols of positivity and hope.</p>
+                </div>
+                <div class="collection-card">
+                    <img src="adaptability.jpg" alt="Adaptability">
+                    <h3>Adaptability Tokens</h3>
+                    <p>Flexibility and strength visualized in collectible forms.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Human Essentials Collections. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
