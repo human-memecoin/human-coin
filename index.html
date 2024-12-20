@@ -13,7 +13,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background: #fafafa;
+            background: linear-gradient(135deg, #e7f1f5, #fafafa);
             color: #333;
             scroll-behavior: smooth;
         }
@@ -49,12 +49,13 @@
             border-radius: 12px;
             text-align: center;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
         }
         .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
         .card img {
             width: 80px;
@@ -95,12 +96,26 @@
             color: #333;
             line-height: 1.6;
         }
+        .information img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 4px solid #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .information img:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
         .coming-soon {
             background: #f0f4f8;
             border: 2px dashed #333;
             border-radius: 12px;
             text-align: center;
             padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .coming-soon h3 {
             color: #1e293b;
@@ -147,6 +162,60 @@
                 transform: translateY(0);
             }
         }
+        .faq, .roadmap {
+            padding: 40px;
+            background: #f0f4f8;
+            margin: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .faq h2, .roadmap h2 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #1e293b;
+            text-align: center;
+        }
+        .faq .question h3 {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            color: #1e293b;
+            text-align: center;
+        }
+        .faq .question p {
+            font-size: 1rem;
+            margin: 0 0 20px;
+            text-align: center;
+        }
+        .roadmap ul {
+            list-style: none;
+            padding: 0;
+        }
+        .roadmap li {
+            font-size: 1rem;
+            margin: 10px 0;
+            color: #333;
+            text-align: center;
+        }
+        .tokenomics {
+            padding: 40px;
+            text-align: center;
+            background: url('reversed one.jpg') no-repeat center center/cover;
+            animation: fadeIn 1s ease-in-out;
+            margin-top: 20px;
+            color: #1e293b;
+            background-position-y: -50px;
+        }
+        .tokenomics h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+        .tokenomics p {
+            font-size: 1.2rem;
+            color: #1e293b;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -154,6 +223,7 @@
         <h1>THE ESSENTIALS</h1>
         <p id="greeting"></p>
     </header>
+
     <div class="container">
         <div class="card" onclick="window.location.href='human.html';">
             <img src="stick-figure1.png" alt="Human">
@@ -196,6 +266,42 @@
     <div class="information">
         <h2>About THE ESSENTIALS</h2>
         <p>Welcome to the new era of memecoins! THE ESSENTIALS is designed to redefine the market, focusing on the true necessities of life: Human, Air, Water, Food, Shelter, and Wife. This innovative project combines community-driven decision-making with a unique collection of tokens representing life's essentials. Join us as we aim to dominate the market and build a vibrant ecosystem for everyone.</p>
+        <h3>Total Supply</h3>
+        <p>The supply of each token will be 8.2 billion, reflecting the snapshot of the world population.</p>
+        <img src="world-population.png" alt="World Population Snapshot">
+    </div>
+
+    <div class="tokenomics">
+        <h2>Tokenomics</h2>
+        <p>
+            <strong>$Human:</strong> 8.2 Billion<br>
+            <strong>$Air:</strong> 8.2 Billion<br>
+            <strong>$Water:</strong> 8.2 Billion<br>
+            <strong>$Food:</strong> 8.2 Billion<br>
+            <strong>$Shelter:</strong> 8.2 Billion<br>
+            <strong>$Wife:</strong> 8.2 Billion
+        </p>
+    </div>
+
+    <div class="faq">
+        <h2>FAQs</h2>
+        <div class="question">
+            <h3>What is THE ESSENTIALS?</h3>
+            <p>THE ESSENTIALS represents key aspects of life through a unique token collection.</p>
+        </div>
+        <div class="question">
+            <h3>How can I participate?</h3>
+            <p>Join the community and stay updated on future launches.</p>
+        </div>
+    </div>
+
+    <div class="roadmap">
+        <h2>Our Roadmap</h2>
+        <ul>
+            <li><strong>Q1 2024:</strong> Launch of $Human and $Air</li>
+            <li><strong>Q2 2024:</strong> Expansion of $Water and $Food</li>
+            <li><strong>Q3 2024:</strong> Community Voting for New Essentials</li>
+        </ul>
     </div>
 
     <footer>
@@ -209,8 +315,5 @@
         </div>
         <p>&copy; 2024 THE ESSENTIALS. All Rights Reserved. | <a href="#">Privacy Policy</a></p>
     </footer>
-    <script>
-        // Dynamic Greeting Based on Time of Day
-        const greeting = document.getElementById('greeting');
-        const hour = new Date().getHours();
-        greeting.textContent =
+</body>
+</html>
