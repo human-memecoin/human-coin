@@ -16,25 +16,51 @@
             background: linear-gradient(135deg, #e7f1f5, #fafafa);
             color: #333;
             scroll-behavior: smooth;
+            overflow-x: hidden;
         }
         header {
             background: #1e293b;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 3px dashed #1e293b;
+            border-radius: 0 0 12px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: wobble 3s infinite ease-in-out;
+            clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, );
         }
         header h1 {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: 3rem;
             color: #f0f4f8;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
         }
         header p {
             font-size: 1rem;
             margin-top: 5px;
-            color: #94a3b8;
+            color: #cbd5e1;
+        }
+        header:hover {
+            transition: transform 0.5s ease;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        header:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 12px;
+            pointer-events: none;
         }
         .container {
             display: grid;
@@ -80,21 +106,27 @@
             margin: 30px auto;
             width: 80%;
         }
-        .information {
+        .information, .tokenomics, .faq, .roadmap {
             padding: 40px;
             text-align: center;
             background: #fafafa;
             animation: fadeIn 1s ease-in-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 2px dashed #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .information h2 {
+        .information h2, .tokenomics h2, .faq h2, .roadmap h2 {
             font-size: 2rem;
             margin-bottom: 20px;
             color: #1e293b;
         }
-        .information p {
+        .information p, .tokenomics p, .faq p, .roadmap ul {
             font-size: 1.2rem;
             color: #333;
             line-height: 1.6;
+            text-align: center;
         }
         .information img {
             max-width: 100%;
@@ -162,59 +194,73 @@
                 transform: translateY(0);
             }
         }
-        .faq, .roadmap {
-            padding: 40px;
-            background: #f0f4f8;
-            margin: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        @keyframes wobble {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(1deg);
+            }
+            50% {
+                transform: rotate(-1deg);
+            }
+            75% {
+                transform: rotate(1deg);
+            }
         }
-        .faq h2, .roadmap h2 {
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            color: #1e293b;
-            text-align: center;
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
         }
-        .faq .question h3 {
-            font-size: 1.2rem;
-            margin: 10px 0;
-            color: #1e293b;
-            text-align: center;
+
+        .falling {
+            position: fixed;
+            top: 0;
+            z-index: 999;
+            pointer-events: none;
+            animation: fall 5s linear infinite;
+            width: 30px;
+            height: 30px;
         }
-        .faq .question p {
-            font-size: 1rem;
-            margin: 0 0 20px;
-            text-align: center;
+
+        .falling:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
         }
-        .roadmap ul {
-            list-style: none;
-            padding: 0;
+
+        .falling:nth-child(2) {
+            left: 25%;
+            animation-delay: 2s;
         }
-        .roadmap li {
-            font-size: 1rem;
-            margin: 10px 0;
-            color: #333;
-            text-align: center;
+
+        .falling:nth-child(3) {
+            left: 40%;
+            animation-delay: 4s;
         }
-        .tokenomics {
-            padding: 40px;
-            text-align: center;
-            background: url('reversed one.jpg') no-repeat center center/cover;
-            animation: fadeIn 1s ease-in-out;
-            margin-top: 20px;
-            color: #1e293b;
-            background-position-y: -50px;
+
+        .falling:nth-child(4) {
+            left: 55%;
+            animation-delay: 6s;
         }
-        .tokenomics h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #1e293b;
+
+        .falling:nth-child(5) {
+            left: 70%;
+            animation-delay: 8s;
         }
-        .tokenomics p {
-            font-size: 1.2rem;
-            color: #1e293b;
-            line-height: 1.6;
+
+        .falling:nth-child(6) {
+            left: 85%;
+            animation-delay: 10s;
         }
     </style>
 </head>
@@ -223,6 +269,13 @@
         <h1>THE ESSENTIALS</h1>
         <p id="greeting"></p>
     </header>
+
+    <img class="falling" src="falling-wife.png" alt="Falling Wife">
+    <img class="falling" src="falling-human.png" alt="Falling Human">
+    <img class="falling" src="falling-food.png" alt="Falling Food">
+    <img class="falling" src="falling-water.png" alt="Falling Water">
+    <img class="falling" src="falling-air.png" alt="Falling Air">
+    <img class="falling" src="falling-shelter.png" alt="Falling Shelter">
 
     <div class="container">
         <div class="card" onclick="window.location.href='human.html';">
