@@ -244,6 +244,37 @@
             opacity: 0.8;
         }
 
+        .task-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .task-button:hover {
+            transform: translateY(-2px);
+            background: #5b52ff;
+        }
+
+        .task-button:active {
+            transform: translateY(0);
+        }
+
+        .verify-button {
+            background: var(--secondary);
+            margin-top: 0.5rem;
+        }
+
+        .verify-button:hover {
+            background: #27ae60;
+        }
+
         @media (max-width: 768px) {
             body {
                 grid-template-columns: 1fr;
@@ -357,6 +388,38 @@
                 </div>
                 <button onclick="completeTask('engage')" class="task-button">Engage</button>
             </div>
+
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-icon">🐦</span>
+                    <h3 class="task-title">Follow Human Coin</h3>
+                </div>
+                <p>Follow the official Human Coin Twitter account!</p>
+                <div class="task-progress">
+                    <div class="task-progress-bar">
+                        <div id="followHumanProgress" class="task-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="followHumanStatus">Not completed</div>
+                </div>
+                <button onclick="openTwitterFollow('human')" class="task-button">Follow Human Coin</button>
+                <button onclick="completeTask('followHuman')" class="task-button verify-button">Verify Follow</button>
+            </div>
+
+            <div class="task-card">
+                <div class="task-header">
+                    <span class="task-icon">✨</span>
+                    <h3 class="task-title">Follow Essentials</h3>
+                </div>
+                <p>Follow the Essentials Twitter account!</p>
+                <div class="task-progress">
+                    <div class="task-progress-bar">
+                        <div id="followEssentialsProgress" class="task-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="followEssentialsStatus">Not completed</div>
+                </div>
+                <button onclick="openTwitterFollow('essentials')" class="task-button">Follow Essentials</button>
+                <button onclick="completeTask('followEssentials')" class="task-button verify-button">Verify Follow</button>
+            </div>
         </div>
     </div>
 
@@ -371,6 +434,16 @@
                 points: 5,
                 exp: 10,
                 maxDaily: 3
+            },
+            followHuman: {
+                points: 50,
+                exp: 100,
+                oneTime: true
+            },
+            followEssentials: {
+                points: 50,
+                exp: 100,
+                oneTime: true
             }
         };
 
@@ -380,7 +453,9 @@
             exp: 0,
             tasks: {
                 checkin: { lastCompleted: null, count: 0 },
-                engage: { count: 0, lastReset: null }
+                engage: { count: 0, lastReset: null },
+                followHuman: { completed: false },
+                followEssentials: { completed: false }
             }
         };
 
@@ -392,6 +467,12 @@
             const now = new Date();
             const task = POINTS_SYSTEM[taskType];
             
+            // Check if task is one-time and already completed
+            if (task.oneTime && userData.tasks[taskType].completed) {
+                alert('This task has already been completed!');
+                return;
+            }
+
             if (taskType === 'checkin') {
                 const lastCompleted = userData.tasks.checkin.lastCompleted;
                 if (lastCompleted && (now - new Date(lastCompleted)) < task.cooldown) {
@@ -399,6 +480,7 @@
                     return;
                 }
                 userData.tasks.checkin.lastCompleted = now;
+                userData.tasks.checkin.count++;
             } else if (taskType === 'engage') {
                 const today = new Date().toDateString();
                 if (userData.tasks.engage.lastReset !== today) {
@@ -410,6 +492,8 @@
                     return;
                 }
                 userData.tasks.engage.count++;
+            } else if (taskType === 'followHuman' || taskType === 'followEssentials') {
+                userData.tasks[taskType].completed = true;
             }
 
             // Update points and exp
@@ -440,6 +524,17 @@
             } catch (error) {
                 console.error('Error saving progress:', error);
             }
+        }
+
+        function openTwitterFollow(account) {
+            const accounts = {
+                human: 'HumanCoinAI',  // Replace with actual Twitter handle
+                essentials: 'EssentialsAI'  // Replace with actual Twitter handle
+            };
+            
+            window.open(`https://twitter.com/intent/follow?screen_name=${accounts[account]}`, 
+                'twitter-follow-dialog', 
+                'width=600,height=600');
         }
 
         async function fetchUserData() {
@@ -482,7 +577,10 @@
             document.getElementById('pointsValue').textContent = userData.points;
             document.getElementById('levelValue').textContent = userData.level;
             document.getElementById('tasksValue').textContent = 
-                userData.tasks.checkin.count + userData.tasks.engage.count;
+                (userData.tasks.checkin.count || 0) + 
+                (userData.tasks.engage.count || 0) +
+                (userData.tasks.followHuman.completed ? 1 : 0) +
+                (userData.tasks.followEssentials.completed ? 1 : 0);
 
             // Update exp bar
             const expNeeded = calculateExpForLevel(userData.level);
@@ -508,6 +606,17 @@
                 document.getElementById('engagementProgress').style.width = `${progress}%`;
                 document.getElementById('engagementStatus').textContent = 
                     `${userData.tasks.engage.count}/${POINTS_SYSTEM.engage.maxDaily} engagements today`;
+            }
+
+            // Update Twitter follow tasks
+            if (userData.tasks.followHuman.completed) {
+                document.getElementById('followHumanProgress').style.width = '100%';
+                document.getElementById('followHumanStatus').textContent = 'Completed!';
+            }
+
+            if (userData.tasks.followEssentials.completed) {
+                document.getElementById('followEssentialsProgress').style.width = '100%';
+                document.getElementById('followEssentialsStatus').textContent = 'Completed!';
             }
         }
 
