@@ -56,17 +56,18 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        .avatar {
-            font-size: 80px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .stick-figure-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+            animation: float 3s ease-in-out infinite;
         }
 
         .username {
@@ -84,11 +85,34 @@
             margin-bottom: 1rem;
         }
 
+        .exp-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 3px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .exp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #8B80FF);
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .exp-text {
+            font-size: 0.8rem;
+            color: var(--text);
+            opacity: 0.8;
+            text-align: right;
+        }
+
         .stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin: 1rem 0;
         }
 
         .stat-item {
@@ -96,11 +120,12 @@
             padding: 1rem;
             border-radius: 10px;
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .stat-item:hover {
             transform: translateY(-5px);
+            background: rgba(108, 99, 255, 0.2);
         }
 
         .stat-value {
@@ -113,6 +138,32 @@
             font-size: 0.9rem;
             color: var(--text);
             opacity: 0.8;
+        }
+
+        .logout-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
         }
 
         .main-content {
@@ -166,22 +217,23 @@
             font-weight: 500;
         }
 
-        .progress-container {
-            margin: 1rem 0;
+        .task-progress {
+            margin-top: 1rem;
         }
 
-        .progress-bar {
+        .task-progress-bar {
+            width: 100%;
             height: 8px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(108, 99, 255, 0.1);
             border-radius: 4px;
             overflow: hidden;
+            margin: 0.5rem 0;
         }
 
-        .progress-fill {
+        .task-progress-fill {
             height: 100%;
-            background: var(--primary);
-            border-radius: 4px;
-            transition: width 1s ease;
+            background: linear-gradient(90deg, var(--secondary), #87D68D);
+            transition: width 0.5s ease;
         }
 
         .level-info {
@@ -190,31 +242,6 @@
             font-size: 0.9rem;
             color: var(--text);
             opacity: 0.8;
-        }
-
-        .logout-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-top: auto;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-        }
-
-        .logout-btn:active {
-            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
@@ -239,6 +266,15 @@
             }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-in {
+            animation: slideIn 0.5s ease forwards;
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -249,21 +285,22 @@
                 transform: translateX(0);
             }
         }
-
-        .animate-in {
-            animation: slideIn 0.5s ease forwards;
-        }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="profile">
             <div class="avatar-container">
-                <img id="avatarImage" src="" alt="Profile" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; display: none;">
-                <div id="defaultAvatar" class="avatar">👤</div>
+                <div class="stick-figure-avatar">🧍</div>
             </div>
             <h2 id="username" class="username">Loading...</h2>
             <p id="twitterHandle" class="twitter-handle">@loading...</p>
+            
+            <div class="exp-bar">
+                <div id="expFill" class="exp-fill"></div>
+            </div>
+            <div id="expText" class="exp-text">0 / 100 XP</div>
+            
             <div class="stats">
                 <div class="stat-item">
                     <div id="pointsValue" class="stat-value">0</div>
@@ -273,68 +310,138 @@
                     <div id="levelValue" class="stat-value">1</div>
                     <div class="stat-label">Level</div>
                 </div>
+                <div class="stat-item">
+                    <div id="tasksValue" class="stat-value">0</div>
+                    <div class="stat-label">Tasks</div>
+                </div>
             </div>
         </div>
-        <button onclick="logout()" class="logout-btn">Logout</button>
+        <button onclick="logout()" class="logout-btn">
+            <span>🚪</span>
+            Sign Out
+        </button>
     </div>
 
     <div class="main-content">
         <div class="dashboard-header">
-            <h1 class="welcome-text">Welcome back!</h1>
+            <h1 class="welcome-text">Welcome, <span id="welcomeName">Human!</span></h1>
         </div>
-
+        
         <div class="tasks-container">
             <div class="task-card">
                 <div class="task-header">
                     <span class="task-icon">🎯</span>
-                    <h2 class="task-title">Daily Tasks</h2>
+                    <h3 class="task-title">Daily Check-in</h3>
                 </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 60%"></div>
+                <p>Check in daily to earn points and maintain your streak!</p>
+                <div class="task-progress">
+                    <div class="task-progress-bar">
+                        <div id="checkInProgress" class="task-progress-fill" style="width: 0%"></div>
                     </div>
-                    <div class="level-info">
-                        <span>3/5 completed</span>
-                        <span>+50 points</span>
-                    </div>
+                    <div id="checkInStatus">Not completed today</div>
                 </div>
+                <button onclick="completeTask('checkin')" class="task-button">Check In</button>
             </div>
-
+            
             <div class="task-card">
                 <div class="task-header">
-                    <span class="task-icon">🏆</span>
-                    <h2 class="task-title">Achievements</h2>
+                    <span class="task-icon">🤝</span>
+                    <h3 class="task-title">Community Engagement</h3>
                 </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 30%"></div>
+                <p>Engage with the community to earn points!</p>
+                <div class="task-progress">
+                    <div class="task-progress-bar">
+                        <div id="engagementProgress" class="task-progress-fill" style="width: 0%"></div>
                     </div>
-                    <div class="level-info">
-                        <span>Level Progress</span>
-                        <span>30%</span>
-                    </div>
+                    <div id="engagementStatus">0/3 engagements today</div>
                 </div>
-            </div>
-
-            <div class="task-card">
-                <div class="task-header">
-                    <span class="task-icon">💰</span>
-                    <h2 class="task-title">Rewards</h2>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 80%"></div>
-                    </div>
-                    <div class="level-info">
-                        <span>Next Reward</span>
-                        <span>100 points</span>
-                    </div>
-                </div>
+                <button onclick="completeTask('engage')" class="task-button">Engage</button>
             </div>
         </div>
     </div>
 
     <script>
+        const POINTS_SYSTEM = {
+            checkin: {
+                points: 10,
+                exp: 20,
+                cooldown: 24 * 60 * 60 * 1000 // 24 hours
+            },
+            engage: {
+                points: 5,
+                exp: 10,
+                maxDaily: 3
+            }
+        };
+
+        let userData = {
+            points: 0,
+            level: 1,
+            exp: 0,
+            tasks: {
+                checkin: { lastCompleted: null, count: 0 },
+                engage: { count: 0, lastReset: null }
+            }
+        };
+
+        function calculateExpForLevel(level) {
+            return level * 100;
+        }
+
+        async function completeTask(taskType) {
+            const now = new Date();
+            const task = POINTS_SYSTEM[taskType];
+            
+            if (taskType === 'checkin') {
+                const lastCompleted = userData.tasks.checkin.lastCompleted;
+                if (lastCompleted && (now - new Date(lastCompleted)) < task.cooldown) {
+                    alert('You can only check in once per day!');
+                    return;
+                }
+                userData.tasks.checkin.lastCompleted = now;
+            } else if (taskType === 'engage') {
+                const today = new Date().toDateString();
+                if (userData.tasks.engage.lastReset !== today) {
+                    userData.tasks.engage.count = 0;
+                    userData.tasks.engage.lastReset = today;
+                }
+                if (userData.tasks.engage.count >= task.maxDaily) {
+                    alert('You have reached the maximum engagements for today!');
+                    return;
+                }
+                userData.tasks.engage.count++;
+            }
+
+            // Update points and exp
+            userData.points += task.points;
+            userData.exp += task.exp;
+
+            // Check for level up
+            const expNeeded = calculateExpForLevel(userData.level);
+            if (userData.exp >= expNeeded) {
+                userData.level++;
+                userData.exp -= expNeeded;
+                alert(`🎉 Congratulations! You've reached level ${userData.level}!`);
+            }
+
+            // Update UI
+            updateUI();
+            
+            // Save to server
+            try {
+                await fetch('https://human-coin-server.onrender.com/api/update_progress', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        }
+
         async function fetchUserData() {
             try {
                 const response = await fetch('https://human-coin-server.onrender.com/api/user', {
@@ -350,33 +457,57 @@
                     throw new Error('Not authenticated');
                 }
 
-                const userData = await response.json();
-                console.log('User data:', userData);  // Debug log
-                
-                // Update profile image
-                if (userData.avatar_url) {
-                    const avatarImg = document.getElementById('avatarImage');
-                    avatarImg.src = userData.avatar_url;
-                    avatarImg.style.display = 'block';
-                    document.getElementById('defaultAvatar').style.display = 'none';
-                }
+                const data = await response.json();
+                userData = {
+                    ...userData,
+                    points: data.points || 0,
+                    level: data.level || 1,
+                    exp: data.exp || 0
+                };
                 
                 // Update user information
-                document.getElementById('username').textContent = userData.twitter_handle || 'Anonymous';
-                document.getElementById('twitterHandle').textContent = '@' + userData.twitter_handle;
-                document.getElementById('pointsValue').textContent = userData.points;
-                document.getElementById('levelValue').textContent = userData.level;
-
-                // Add animation classes
-                document.querySelectorAll('.task-card').forEach((card, index) => {
-                    setTimeout(() => {
-                        card.classList.add('animate-in');
-                    }, index * 100);
-                });
+                document.getElementById('username').textContent = data.twitter_handle || 'Anonymous';
+                document.getElementById('twitterHandle').textContent = '@' + data.twitter_handle;
+                document.getElementById('welcomeName').textContent = data.twitter_handle || 'Human';
+                updateUI();
 
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 window.location.href = '../marketing.html';
+            }
+        }
+
+        function updateUI() {
+            // Update stats
+            document.getElementById('pointsValue').textContent = userData.points;
+            document.getElementById('levelValue').textContent = userData.level;
+            document.getElementById('tasksValue').textContent = 
+                userData.tasks.checkin.count + userData.tasks.engage.count;
+
+            // Update exp bar
+            const expNeeded = calculateExpForLevel(userData.level);
+            const expPercentage = (userData.exp / expNeeded) * 100;
+            document.getElementById('expFill').style.width = `${expPercentage}%`;
+            document.getElementById('expText').textContent = 
+                `${userData.exp} / ${expNeeded} XP`;
+
+            // Update task progress
+            if (userData.tasks.checkin.lastCompleted) {
+                const lastCheckin = new Date(userData.tasks.checkin.lastCompleted);
+                const now = new Date();
+                const hoursAgo = (now - lastCheckin) / (1000 * 60 * 60);
+                document.getElementById('checkInProgress').style.width = 
+                    hoursAgo < 24 ? '100%' : '0%';
+                document.getElementById('checkInStatus').textContent = 
+                    hoursAgo < 24 ? 'Completed today!' : 'Not completed today';
+            }
+
+            const today = new Date().toDateString();
+            if (userData.tasks.engage.lastReset === today) {
+                const progress = (userData.tasks.engage.count / POINTS_SYSTEM.engage.maxDaily) * 100;
+                document.getElementById('engagementProgress').style.width = `${progress}%`;
+                document.getElementById('engagementStatus').textContent = 
+                    `${userData.tasks.engage.count}/${POINTS_SYSTEM.engage.maxDaily} engagements today`;
             }
         }
 
@@ -385,7 +516,10 @@
             document.cookie = 'user_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=onrender.com; secure; samesite=none';
             document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=onrender.com; secure; samesite=none';
             
-            // Redirect to marketing page
+            // Clear local storage
+            localStorage.clear();
+            
+            // Force reload the page to clear any cached data
             window.location.href = '../marketing.html';
         }
 

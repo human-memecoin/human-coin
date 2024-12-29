@@ -224,14 +224,20 @@ def get_user():
 
 @app.route('/api/update_progress', methods=['POST'])
 def update_progress():
-    if 'user_id' not in session:
-        return jsonify({'error': 'Not logged in'}), 401
-    
     try:
+        if 'user_id' not in session:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+        
         data = request.json
+        user_id = session['user_id']
+        
         conn = sqlite3.connect('users.db')
         c = conn.cursor()
         
+        # Update user progress
         c.execute('''
             UPDATE users 
             SET points = ?,
@@ -242,15 +248,23 @@ def update_progress():
             data['points'],
             data['level'],
             data['exp'],
-            session['user_id']
+            user_id
         ))
         
         conn.commit()
         conn.close()
-        return jsonify({'success': True})
+        
+        response = make_response(jsonify({'success': True}))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Error updating progress: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
 def init_db():
     conn = sqlite3.connect('users.db')
