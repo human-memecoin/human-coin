@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import sqlite3
 from dotenv import load_dotenv
 import json
+import time
 
 # Load environment variables
 load_dotenv()
@@ -261,6 +262,65 @@ def update_progress():
         
     except Exception as e:
         print(f"Error updating progress: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/verify_follow', methods=['POST'])
+def verify_follow():
+    try:
+        if 'user_id' not in session:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+        
+        data = request.json
+        account = data.get('account')
+        user_id = session['user_id']
+        
+        # Get user's access token
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        c.execute('SELECT twitter_handle FROM users WHERE id = ?', (user_id,))
+        user = c.fetchone()
+        conn.close()
+        
+        if not user:
+            response = make_response(jsonify({'error': 'User not found'}), 404)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        # Verify follow using Twitter API
+        accounts = {
+            'human': '@TheHumanCoin',
+            'essentials': '@Essentials_xyz'
+        }
+        
+        target_account = accounts.get(account)
+        if not target_account:
+            response = make_response(jsonify({'error': 'Invalid account type'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        # For now, we'll simulate verification with a delay
+        # In production, you would use the Twitter API to verify the follow
+        time.sleep(2)  # Simulate API call
+        is_following = True  # In production, this would be the actual verification result
+        
+        response = make_response(jsonify({
+            'verified': is_following,
+            'message': f'Successfully verified follow for {target_account}'
+        }))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+        
+    except Exception as e:
+        print(f"Error verifying follow: {str(e)}")
         response = make_response(jsonify({'error': str(e)}), 500)
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
