@@ -13,8 +13,8 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, 
      supports_credentials=True, 
-     origins=['https://human-memecoin.github.io'],
-     allow_headers=['Content-Type', 'Authorization'],
+     origins=['https://human-memecoin.github.io', 'http://localhost:5500', 'http://127.0.0.1:5500'],
+     allow_headers=['Content-Type', 'Authorization', 'Cookie'],
      expose_headers=['Set-Cookie'],
      methods=['GET', 'POST', 'OPTIONS'])
 
@@ -89,7 +89,18 @@ def twitter_authorize():
             httponly=True,
             samesite='None',
             max_age=max_age,
-            domain='human-memecoin.github.io'
+            domain='onrender.com'  # Updated domain
+        )
+        
+        # Set additional session cookie
+        response.set_cookie(
+            'session',
+            request.cookies.get('session', ''),
+            secure=True,
+            httponly=True,
+            samesite='None',
+            max_age=max_age,
+            domain='onrender.com'  # Updated domain
         )
         
         return response
@@ -103,7 +114,7 @@ def get_user():
     if request.method == 'OPTIONS':
         response = make_response()
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Cookie')
         response.headers.add('Access-Control-Allow-Methods', 'GET')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
@@ -117,8 +128,11 @@ def get_user():
             user_session = request.cookies.get('user_session')
             if user_session:
                 user_id = user_session
+                # Restore session
+                session['user_id'] = user_id
         
         if not user_id:
+            print("No user_id found in session or cookies")  # Debug print
             return jsonify({'error': 'Not logged in'}), 401
         
         # Initialize database connection
