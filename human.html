@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$HUMAN Token - THE ESSENTIALS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root[data-theme="light"] {
+            --bg: #ffffff;
+            --text: #333333;
+            --text-secondary: #666666;
+            --accent: #ff6b6b;
+            --card-bg: #f8f9fa;
+            --border: #ddd;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: #cccccc;
+            --accent: #ff6b6b;
+            --card-bg: #2d2d2d;
+            --border: #444;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            position: relative;
+            text-align: center;
+            padding: 40px 0;
+            overflow: hidden;
+        }
+
+        .stick-figure-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            animation: powerUpShake 0.05s infinite;
+        }
+
+        .supercharge-aura {
+            position: absolute;
+            top: -75%;
+            left: -75%;
+            width: 250%;
+            height: 250%;
+            background: 
+                radial-gradient(circle at center, 
+                    rgba(30, 144, 255, 0.8) 0%,
+                    rgba(0, 191, 255, 0.6) 30%,
+                    rgba(135, 206, 250, 0.4) 50%,
+                    transparent 70%
+                );
+            filter: blur(5px);
+            animation: pulseAura 1s infinite;
+            z-index: 1;
+            transform-origin: center;
+        }
+
+        .electric-field {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: 2;
+        }
+
+        .electric-bolt {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.8) 49%, transparent 51%),
+                linear-gradient(-45deg, transparent 45%, rgba(255, 255, 255, 0.8) 49%, transparent 51%);
+            animation: rotateBolts 0.2s infinite;
+        }
+
+        .energy-sphere {
+            position: absolute;
+            top: -25%;
+            left: -25%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(135, 206, 250, 0.7) 20%,
+                rgba(30, 144, 255, 0.5) 40%,
+                transparent 60%
+            );
+            animation: pulseSphere 2s infinite;
+            z-index: 2;
+        }
+
+        .power-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #87CEFA;
+        }
+
+        @keyframes powerUpShake {
+            0%, 100% { transform: translate(-2px, -2px) rotate(-1deg); }
+            25% { transform: translate(2px, -2px) rotate(1deg); }
+            50% { transform: translate(-2px, 2px) rotate(1deg); }
+            75% { transform: translate(2px, 2px) rotate(-1deg); }
+        }
+
+        @keyframes pulseAura {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes rotateBolts {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseSphere {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .power-ring {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            border: 4px solid rgba(135, 206, 250, 0.8);
+            border-radius: 50%;
+            animation: expandRing 2s infinite;
+            z-index: 1;
+        }
+
+        @keyframes expandRing {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .header img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: relative;
+            z-index: 4;
+            filter: brightness(1.2) contrast(1.2);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { filter: brightness(1.2) contrast(1.2); }
+            50% { filter: brightness(1.4) contrast(1.4); }
+        }
+
+        /* Generate multiple particles with different animations */
+        .particle:nth-child(1) { left: 20%; top: 20%; animation: particleDrift 1.5s infinite; }
+        .particle:nth-child(2) { right: 20%; top: 20%; animation: particleDrift 1.5s infinite 0.2s; }
+        .particle:nth-child(3) { left: 50%; top: 10%; animation: particleDrift 1.5s infinite 0.4s; }
+        .particle:nth-child(4) { right: 50%; top: 10%; animation: particleDrift 1.5s infinite 0.6s; }
+        .particle:nth-child(5) { left: 35%; top: 15%; animation: particleDrift 1.5s infinite 0.8s; }
+        .particle:nth-child(6) { right: 35%; top: 15%; animation: particleDrift 1.5s infinite 1s; }
+
+        @keyframes particleDrift {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .section {
+            background: var(--card-bg);
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .tokenomics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tokenomics-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .tokenomics-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .tokenomics-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .tokenomics-item p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .features-list li:hover {
+            transform: translateY(-5px);
+        }
+
+        .features-list h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .features-list p {
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            transform: translateY(-5px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 40px;
+            border-top: 3px dashed var(--border);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .social-icon {
+            font-size: 24px;
+            color: var(--text);
+            transition: transform 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header img {
+                width: 120px;
+                height: 120px;
+            }
+
+            .tokenomics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </button>
+    <a href="index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <div class="stick-figure-container">
+                <div class="supercharge-aura"></div>
+                <div class="electric-field">
+                    <div class="electric-bolt"></div>
+                </div>
+                <div class="energy-sphere"></div>
+                <div class="power-ring"></div>
+                <div class="power-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+                <img src="stick-figure1.png" alt="$HUMAN Token">
+            </div>
+            <h1>$HUMAN Token</h1>
+            <p>The governance token of THE ESSENTIALS ecosystem</p>
+        </div>
+
+        <div class="section">
+            <h2>Tokenomics</h2>
+            <div class="tokenomics-grid">
+                <div class="tokenomics-item">
+                    <h3>Total Supply</h3>
+                    <p>1,000,000,000</p>
+                </div>
+                <div class="tokenomics-item">
+                    <h3>Network</h3>
+                    <p>Solana Blockchain</p>
+                </div>
+                <div class="tokenomics-item">
+                    <h3>Launch Platform</h3>
+                    <p>PumpFun</p>
+                </div>
+                <div class="tokenomics-item">
+                    <h3>Distribution</h3>
+                    <p>100% Fair Launch</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Fair Launch on PumpFun</h2>
+            <ul class="features-list">
+                <li>
+                    <h3>Anti-Rug Protection</h3>
+                    <p>PumpFun's innovative system prevents rug pulls through strict security measures and token creation protocols.</p>
+                </li>
+                <li>
+                    <h3>No Presale</h3>
+                    <p>Everyone gets an equal opportunity to participate. No private sales, no hidden allocations.</p>
+                </li>
+                <li>
+                    <h3>No Team Allocation</h3>
+                    <p>100% of tokens are available for the community. No team tokens, ensuring a truly fair distribution.</p>
+                </li>
+                <li>
+                    <h3>Verified Security</h3>
+                    <p>All tokens launched on PumpFun are thoroughly verified and secured against common vulnerabilities.</p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Token Utility</h2>
+            <ul class="features-list">
+                <li>
+                    <h3>Governance Rights</h3>
+                    <p>Participate in important ecosystem decisions through DAO voting.</p>
+                </li>
+                <li>
+                    <h3>NFT Benefits</h3>
+                    <p>Get exclusive access to NFT minting events and special collections.</p>
+                </li>
+                <li>
+                    <h3>Staking Rewards</h3>
+                    <p>Earn rewards by staking your $HUMAN tokens.</p>
+                </li>
+                <li>
+                    <h3>Community Perks</h3>
+                    <p>Access exclusive features and community events.</p>
+                </li>
+            </ul>
+        </div>
+
+        <footer>
+            <div class="social-links">
+                <a href="https://x.com/TheHumanCoin" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+                <a href="https://t.me/TheHumanCoin" target="_blank" class="social-icon"><i class="fab fa-telegram"></i></a>
+                <a href="#" target="_blank" class="social-icon"><i class="fab fa-discord"></i></a>
+                <a href="#" target="_blank" class="social-icon"><i class="fab fa-medium"></i></a>
+            </div>
+            <p> 2024 THE ESSENTIALS. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    </script>
+</body>
+</html>

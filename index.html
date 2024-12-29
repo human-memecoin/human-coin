@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ESSENTIALS</title>
+    <link rel="icon" href="theEssentials.jpg" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --background: #FFFFFF;
+            --text: #000000;
+            --text-secondary: #333333;
+            --border: #000000;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --card-bg: #FFFFFF;
+        }
+
+        [data-theme="dark"] {
+            --background: #1a1a1a;
+            --text: #FFFFFF;
+            --text-secondary: #cccccc;
+            --border: #FFFFFF;
+            --shadow: rgba(255, 255, 255, 0.1);
+            --card-bg: #2d2d2d;
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            color: var(--text);
+            transition: transform 0.5s ease;
+        }
+
+        .theme-toggle:hover i {
+            transform: rotate(360deg);
+        }
+
+        .theme-toggle .fa-sun {
+            color: #ffd700;
+        }
+
+        .theme-toggle .fa-moon {
+            color: #87ceeb;
+        }
+
+        body {
+            font-family: 'Permanent Marker', cursive;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: var(--background);
+            color: var(--text);
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 0.5rem 2rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 3px dashed var(--border);
+            backdrop-filter: blur(10px);
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        header .header-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header h1 {
+            color: #000;
+            font-size: 2rem;
+            margin: 0;
+            animation: fadeInDown 1.5s ease-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: bold;
+        }
+
+        header p {
+            color: #000;
+            font-size: 0.9rem;
+            margin: 0.2rem 0 0;
+            animation: fadeInUp 1.5s ease-out;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] header h1,
+        [data-theme="dark"] header p {
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        header:hover {
+            transition: transform 0.5s ease;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px var(--shadow);
+        }
+
+        header:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .container {
+            padding-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 3px dashed var(--border);
+            border-radius: 180px;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .card:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 8px 20px var(--shadow);
+        }
+
+        .card img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            border: 2px dashed var(--border);
+        }
+
+        .card h2 {
+            margin: 10px 0;
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        .contract {
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .separator {
+            width: 80%;
+            margin: 40px auto;
+            border-bottom: 2px dashed var(--border);
+        }
+
+        .human-coin-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .human-coin-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--text);
+        }
+
+        .token-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px auto;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .highlight-box {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .highlight-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .highlight-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .highlight-box p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin: 5px 0;
+        }
+
+        .information, .tokenomics, .faq, .roadmap {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .information:hover, .tokenomics:hover, .faq:hover, .roadmap:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+
+        .information:before, .tokenomics:before, .faq:before, .roadmap:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shine 3s infinite linear;
+        }
+
+        .information img {
+            max-width: 80%;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            border: 4px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            object-fit: contain;
+        }
+
+        .information img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px var(--shadow);
+        }
+
+        @keyframes slideInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            20% {
+                left: 100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .information h2, .tokenomics h2, .faq h2, .roadmap h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            animation: popIn 0.5s ease-out;
+            transform-origin: center;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .information p, .tokenomics p, .faq p, .roadmap ul {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            text-align: center;
+            animation: fadeInText 0.8s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInText {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .coming-soon {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+        .coming-soon h3 {
+            color: var(--text);
+            font-size: 1.5rem;
+        }
+        footer {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .footer-logo p {
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .social-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text);
+            text-decoration: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-icon i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .social-icon span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            color: var(--text);
+        }
+
+        .copyright {
+            color: var(--text);
+            opacity: 0.6;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .social-links {
+                gap: 20px;
+            }
+
+            .footer-logo img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .social-bar {
+            padding: 20px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .social-bar a {
+            margin: 10px;
+            font-size: 2rem;
+            color: var(--text);
+        }
+
+        .social-bar a:hover {
+            transform: translateY(-5px);
+        }
+
+        .social-bar .whitepaper-link {
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .social-bar .whitepaper-link:hover {
+            transform: translateY(-5px);
+        }
+
+        .how-it-works {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-header .section-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--text);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mechanism {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .mechanism-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .mechanism-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .mechanism-item h3 {
+            color: var(--text);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .mechanism-item p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tokenomics {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .token-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .detail-item h3 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .detail-item p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .team .team-member img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border: 2px dashed var(--border);
+            padding: 10px;
+            background: var(--card-bg);
+            transition: transform 0.3s ease;
+        }
+
+        .team .team-member img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes wobble {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(1deg);
+            }
+            50% {
+                transform: rotate(-1deg);
+            }
+            75% {
+                transform: rotate(1deg);
+            }
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        /* Falling Animation Elements */
+        .falling-stickers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .falling {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            opacity: 0;
+            animation: fall var(--fall-duration) linear infinite;
+            filter: drop-shadow(2px 4px 6px var(--shadow));
+        }
+
+        .falling:nth-child(1) {
+            --fall-duration: 15s;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .falling:nth-child(2) {
+            --fall-duration: 12s;
+            left: 25%;
+            animation-delay: -2s;
+        }
+
+        .falling:nth-child(3) {
+            --fall-duration: 14s;
+            left: 35%;
+            animation-delay: -4s;
+        }
+
+        .falling:nth-child(4) {
+            --fall-duration: 16s;
+            left: 45%;
+            animation-delay: -6s;
+        }
+
+        .falling:nth-child(5) {
+            --fall-duration: 13s;
+            left: 55%;
+            animation-delay: -8s;
+        }
+
+        .falling:nth-child(6) {
+            --fall-duration: 15s;
+            left: 65%;
+            animation-delay: -10s;
+        }
+
+        .falling:nth-child(7) {
+            --fall-duration: 14s;
+            left: 75%;
+            animation-delay: -12s;
+        }
+
+        .falling:nth-child(8) {
+            --fall-duration: 13s;
+            left: 85%;
+            animation-delay: -14s;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10%) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Roadmap Styles */
+        .roadmap {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .roadmap h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            animation: popIn 0.5s ease-out;
+            transform-origin: center;
+        }
+
+        .roadmap .timeline {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .roadmap .timeline-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .roadmap .timeline-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .roadmap .phase {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .roadmap ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .roadmap li {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin: 5px 0;
+        }
+
+        /* Mint Counter Styles */
+        .mint-counter {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .mint-counter .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .mint-counter .countdown-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 100px;
+            transition: transform 0.3s ease;
+        }
+
+        .mint-counter .countdown-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .mint-counter .countdown-item span {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .mint-counter .countdown-item p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* Team Styles */
+        .team {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .team .team-grid {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .team .team-member {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .team .team-member:hover {
+            transform: translateY(-5px);
+        }
+
+        /* FAQ Styles */
+        .faq {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .faq .faq-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .faq .faq-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .faq .faq-question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .faq .faq-answer {
+            margin-top: 10px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        /* Newsletter Styles */
+        .newsletter {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .newsletter .subscribe-form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .newsletter input[type="email"] {
+            padding: 10px 20px;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            width: 300px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .newsletter button {
+            padding: 10px 20px;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .newsletter button:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Contract Styles */
+        .contracts {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+        }
+
+        .contracts .contract-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .contracts .contract-item button {
+            padding: 5px 15px;
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .contracts .contract-item button:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Footer Styles */
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .social-icon {
+            font-size: 24px;
+            color: var(--text);
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            color: var(--text);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
+        }
+
+        .separator-dot {
+            color: var(--text-secondary);
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .whitepaper-link {
+            font-weight: bold;
+        }
+
+        /* How It Works Styles */
+        .how-it-works {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .mechanism {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mechanism-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .mechanism-item:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Tokenomics Styles */
+        .tokenomics {
+            padding: 40px;
+            text-align: center;
+            background: var(--card-bg);
+            animation: slideInUp 1s ease-out;
+            margin: 20px auto;
+            width: 80%;
+            border: 3px dashed var(--border);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: var(--text);
+        }
+
+        .token-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            background: var(--card-bg);
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .detail-item h3 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .detail-item p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .population-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+            color: #ffffff;
+        }
+
+        .population-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #1a1a1a 0%, #333333 100%);
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .population-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .population-content h2 {
+            color: #ffffff;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .population-counter {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+            background: -webkit-linear-gradient(45deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .population-info {
+            font-size: 1.2rem;
+            color: #cccccc;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .population-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .population-stat {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .population-stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .population-stat h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .population-stat p {
+            font-size: 1.2rem;
+            color: #cccccc;
+        }
+
+        @media (max-width: 768px) {
+            .population-counter {
+                font-size: 2.5rem;
+            }
+            
+            .population-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Global Impact Statistics */
+        .impact-section {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+            position: relative;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .impact-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .impact-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .impact-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .impact-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffffff;
+        }
+
+        /* Resource Map */
+        .map-section {
+            background: #000000;
+            padding: 80px 20px;
+            position: relative;
+        }
+
+        .map-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 600px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Dashboard */
+        .dashboard-section {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dashboard-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            background: linear-gradient(45deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Token Utility */
+        .token-utility-section {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .utility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .utility-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .utility-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* NFT Gallery */
+        .nft-gallery {
+            background: #000000;
+            padding: 80px 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .nft-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .nft-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .nft-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .nft-info {
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        /* Emergency Tracker */
+        .emergency-section {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .emergency-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #ff4444;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-card:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .urgency-high {
+            border-left-color: #ff4444;
+        }
+
+        .urgency-medium {
+            border-left-color: #ffbb33;
+        }
+
+        .urgency-low {
+            border-left-color: #00C851;
+        }
+
+        /* Human Stories */
+        .stories-section {
+            background: #000000;
+            color: #ffffff;
+            padding: 80px 20px;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .story-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .story-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .story-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            object-fit: cover;
+        }
+
+        .story-quote {
+            font-style: italic;
+            color: #cccccc;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .impact-grid,
+            .dashboard-grid,
+            .utility-grid,
+            .gallery-grid,
+            .emergency-grid,
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .map-container {
+                height: 400px;
+            }
+        }
+        .intro-section {
+            text-align: center;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .intro-section h2 {
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro-section p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .intro-highlight {
+            color: var(--accent);
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+        }
+
+        .intro-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .intro-highlight:hover::after {
+            transform: scaleX(1);
+        }
+
+        .intro-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 1rem;
+        }
+
+        .intro-feature {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .intro-feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .intro-feature i {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .intro-feature h3 {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-feature p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Cards Container Styles */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        .card h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card .contract {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: var(--text-color);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Community Card Specific Styles */
+        .card.community {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            color: white;
+        }
+
+        .card.community h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .card.community p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .card.community img {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        /* Card Effects and Animations */
+        @keyframes charging {
+            0% {
+                box-shadow: 0 0 10px #FFD700,
+                           0 0 20px #FFD700,
+                           0 0 30px #FFA500,
+                           0 0 40px #FF8C00;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 15px #FFD700,
+                           0 0 30px #FFD700,
+                           0 0 45px #FFA500,
+                           0 0 60px #FF8C00;
+                transform: scale(1.02);
+            }
+            100% {
+                box-shadow: 0 0 10px #FFD700,
+                           0 0 20px #FFD700,
+                           0 0 30px #FFA500,
+                           0 0 40px #FF8C00;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes vibrate {
+            0% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes aura {
+            0% {
+                opacity: 0.2;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0.2;
+                transform: scale(1);
+            }
+        }
+
+        /* Card Styles with Effects */
+        .card {
+            position: relative;
+            overflow: visible;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5), transparent 70%);
+            z-index: -1;
+            animation: aura 2s infinite ease-in-out;
+            border-radius: inherit;
+            opacity: 0.3;
+        }
+
+        .card img {
+            animation: vibrate 0.5s infinite;
+        }
+
+        /* Water Card */
+        .card.water {
+            background: linear-gradient(45deg, #00CED1, #20B2AA, #008B8B);
+            border: 3px solid #00CED1;
+            animation: chargingWater 2s infinite ease-in-out;
+        }
+
+        .card.water img {
+            filter: drop-shadow(0 0 5px #00CED1);
+        }
+
+        /* Food Card */
+        .card.food {
+            background: linear-gradient(45deg, #4CAF50, #45a049, #388E3C);
+            border: 3px solid #4CAF50;
+            animation: chargingFood 2s infinite ease-in-out;
+        }
+
+        .card.food img {
+            filter: drop-shadow(0 0 5px #4CAF50);
+        }
+
+        @keyframes chargingFood {
+            0%, 100% {
+                box-shadow: 0 0 5px #4CAF50,
+                           0 0 10px #4CAF50,
+                           0 0 15px #45a049,
+                           0 0 20px #388E3C;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 8px #4CAF50,
+                           0 0 15px #4CAF50,
+                           0 0 20px #45a049,
+                           0 0 25px #388E3C;
+                transform: scale(1.01);
+            }
+        }
+
+        /* Air Card */
+        .card.air {
+            background: linear-gradient(45deg, #E0FFFF, #B0E0E6, #87CEEB);
+            border: 3px solid #E0FFFF;
+            animation: chargingAir 2s infinite ease-in-out;
+        }
+
+        .card.air img {
+            filter: drop-shadow(0 0 5px #E0FFFF);
+        }
+
+        @keyframes chargingAir {
+            0%, 100% {
+                box-shadow: 0 0 5px #E0FFFF,
+                           0 0 10px #E0FFFF,
+                           0 0 15px #B0E0E6,
+                           0 0 20px #87CEEB;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 8px #E0FFFF,
+                           0 0 15px #E0FFFF,
+                           0 0 20px #B0E0E6,
+                           0 0 25px #87CEEB;
+                transform: scale(1.01);
+            }
+        }
+
+        /* Shelter Card */
+        .card.shelter {
+            background: linear-gradient(45deg, #8B4513, #A0522D, #CD853F);
+            border: 3px solid #8B4513;
+            animation: chargingShelter 2s infinite ease-in-out;
+        }
+
+        .card.shelter img {
+            filter: drop-shadow(0 0 5px #8B4513);
+        }
+
+        @keyframes chargingShelter {
+            0%, 100% {
+                box-shadow: 0 0 5px #8B4513,
+                           0 0 10px #8B4513,
+                           0 0 15px #A0522D,
+                           0 0 20px #CD853F;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 8px #8B4513,
+                           0 0 15px #8B4513,
+                           0 0 20px #A0522D,
+                           0 0 25px #CD853F;
+                transform: scale(1.01);
+            }
+        }
+
+        /* Companion Card */
+        .card.companion {
+            background: linear-gradient(45deg, #FF69B4, #FF1493, #DB7093);
+            border: 3px solid #FF69B4;
+            animation: chargingCompanion 2s infinite ease-in-out;
+        }
+
+        .card.companion img {
+            filter: drop-shadow(0 0 5px #FF69B4);
+        }
+
+        @keyframes chargingCompanion {
+            0%, 100% {
+                box-shadow: 0 0 5px #FF69B4,
+                           0 0 10px #FF69B4,
+                           0 0 15px #FF1493,
+                           0 0 20px #DB7093;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 8px #FF69B4,
+                           0 0 15px #FF69B4,
+                           0 0 20px #FF1493,
+                           0 0 25px #DB7093;
+                transform: scale(1.01);
+            }
+        }
+
+        /* Community Card Special Effects */
+        .card.community {
+            background: linear-gradient(135deg, #9c27b0, #673ab7);
+            border: 3px solid #9c27b0;
+            animation: chargingCommunity 2s infinite ease-in-out;
+        }
+
+        .card.community img {
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            animation: vibrate 0.5s infinite;
+        }
+
+        @keyframes chargingCommunity {
+            0%, 100% {
+                box-shadow: 0 0 5px #9c27b0,
+                           0 0 10px #9c27b0,
+                           0 0 15px #673ab7,
+                           0 0 20px #512da8;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 8px #9c27b0,
+                           0 0 15px #9c27b0,
+                           0 0 20px #673ab7,
+                           0 0 25px #512da8;
+                transform: scale(1.01);
+            }
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1200px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+
+            .intro-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .header {
+                padding: 0.4rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.8rem;
+            }
+
+            .intro-section {
+                padding: 1.5rem;
+            }
+
+            .intro-section h2 {
+                font-size: 1.8rem;
+            }
+
+            .intro-section p {
+                font-size: 1rem;
+            }
+
+            .intro-features {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 1.2rem;
+            }
+
+            .card img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .card h2 {
+                font-size: 1.3rem;
+            }
+
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .header {
+                padding: 0.3rem 0.8rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header p {
+                font-size: 0.7rem;
+            }
+
+            .intro-section {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .intro-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .intro-section p {
+                font-size: 0.9rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .card img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .card h2 {
+                font-size: 1.2rem;
+            }
+
+            .theme-toggle {
+                width: 35px;
+                height: 35px;
+            }
+
+            .falling {
+                display: none; /* Hide falling stickers on mobile */
+            }
+        }
+
+        /* Fix for ultra-wide screens */
+        @media screen and (min-width: 1920px) {
+            .cards-container {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 1800px;
+            }
+
+            .intro-section {
+                max-width: 1600px;
+            }
+        }
+
+        /* Fix for small height screens */
+        @media screen and (max-height: 700px) {
+            .header {
+                padding: 0.3rem 1rem;
+            }
+
+            .intro-section {
+                padding: 1rem;
+            }
+
+            .cards-container {
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /* Base responsive container */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            box-sizing: border-box;
+        }
+
+        /* Ensure images are responsive */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Fix for card animations on mobile */
+        @media (hover: none) {
+            .card:hover {
+                transform: none;
+            }
+
+            .card img:hover {
+                transform: none;
+            }
+        }
+
+        /* Reduce animation intensity on mobile */
+        @media (prefers-reduced-motion: reduce) {
+            .card {
+                animation: none;
+            }
+
+            .card::before {
+                animation: none;
+            }
+
+            .card img {
+                animation: none;
+            }
+
+            .falling {
+                animation: none;
+            }
+        }
+
+        /* Ensure text remains readable */
+        * {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        .nft-collections-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .nft-collections-section .section-title {
+            font-size: 2.5rem;
+            color: var(--text);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nft-collections-section .mint-counter {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>THE ESSENTIALS</h1>
+            <p>Discover the fundamental needs of human life</p>
+            <div class="header-buttons">
+                <a href="https://human-memecoin.github.io/human-coin/marketing.html" class="marketing-btn">Marketing Program Phase 1</a>
+            </div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+            <i class="fas fa-sun light-icon"></i>
+            <i class="fas fa-moon dark-icon"></i>
+        </button>
+    </header>
+
+    <div class="falling-stickers">
+        <img class="falling" src="falling-water.png" alt="Water Essential">
+        <img class="falling" src="falling-food.png" alt="Food Essential">
+        <img class="falling" src="falling-air.png" alt="Air Essential">
+        <img class="falling" src="falling-shelter.png" alt="Shelter Essential">
+        <img class="falling" src="falling-companion.png" alt="Companion Essential">
+        <img class="falling" src="falling-water.png" alt="Water Essential">
+        <img class="falling" src="falling-food.png" alt="Food Essential">
+        <img class="falling" src="falling-air.png" alt="Air Essential">
+    </div>
+
+    <div class="intro-section">
+        <h2>Welcome to THE ESSENTIALS</h2>
+        <p>Discover a revolutionary NFT collection that goes beyond digital art. THE ESSENTIALS represents the five fundamental human needs - <span class="intro-highlight">Water</span>, <span class="intro-highlight">Food</span>, <span class="intro-highlight">Air</span>, <span class="intro-highlight">Shelter</span>, and <span class="intro-highlight">Companion</span>. Each token is not just an investment; it's a commitment to making a difference in the world.</p>
+        
+        <div class="intro-features">
+            <div class="intro-feature">
+                <i class="fas fa-gem"></i>
+                <h3>Unique Collection</h3>
+                <p>Each NFT is uniquely crafted with artistic detail and meaningful symbolism</p>
+            </div>
+            <div class="intro-feature">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>Social Impact</h3>
+                <p>Supporting global initiatives for basic human needs and sustainable development</p>
+            </div>
+            <div class="intro-feature">
+                <i class="fas fa-users"></i>
+                <h3>Community Driven</h3>
+                <p>Join a passionate community committed to making positive change</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nft-collections-section">
+        <h2 class="section-title">NFT COLLECTIONS</h2>
+        <div class="cards-container">
+            <div class="card water" onclick="window.location.href='water.html';">
+                <img src="water-icon.png" alt="Water Essential">
+                <h2>Water</h2>
+                <p class="contract">NFT Collection</p>
+                <p>The foundation of life itself. Water represents purity, flow, and adaptability. Each NFT in this collection symbolizes the fluid nature of life and existence.</p>
+            </div>
+
+            <div class="card food" onclick="window.location.href='food.html';">
+                <img src="food-icon.png" alt="Food Essential">
+                <h2>Food</h2>
+                <p class="contract">NFT Collection</p>
+                <p>Sustenance and energy for growth. Each NFT in this collection represents nourishment and sustainable development, celebrating the essence of sustenance.</p>
+            </div>
+
+            <div class="card air" onclick="window.location.href='air.html';">
+                <img src="air-icon.png" alt="Air Essential">
+                <h2>Air</h2>
+                <p class="contract">NFT Collection</p>
+                <p>The breath of life. This NFT collection represents transparency and accessibility. Like oxygen, each piece is essential and unique.</p>
+            </div>
+
+            <div class="card shelter" onclick="window.location.href='shelter.html';">
+                <img src="shelter-icon.png" alt="Shelter Essential">
+                <h2>Shelter</h2>
+                <p class="contract">NFT Collection</p>
+                <p>Protection and security. Each NFT in this collection represents stability and safety, providing a unique digital haven in our ecosystem.</p>
+            </div>
+
+            <div class="card companion" onclick="window.location.href='Companion.html';">
+                <img src="Companion.png" alt="Companion Essential">
+                <h2>Companion</h2>
+                <p class="contract">NFT Collection</p>
+                <p>Companionship and harmony. This NFT collection celebrates the emotional and social aspects of life, each piece representing a unique bond.</p>
+            </div>
+
+            <div class="card community">
+                <img src="question.png" alt="Next Essential">
+                <h3>Next Essential?</h3>
+                <p>The next essential will be decided by the community. Stay tuned!</p>
+            </div>
+        </div>
+
+        <div class="mint-counter">
+            <h2>NFT Collection Launch</h2>
+            <div class="countdown">
+                <div class="countdown-item">
+                    <span id="days">00</span>
+                    <p>Days</p>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">00</span>
+                    <p>Hours</p>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">00</span>
+                    <p>Minutes</p>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">00</span>
+                    <p>Seconds</p>
+                </div>
+            </div>
+            <button class="mint-button" disabled>Minting Soon</button>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="human-coin-section">
+        <h2>$HUMAN - The Ecosystem Token</h2>
+        <div class="card human" onclick="window.location.href='human.html';">
+            <img src="stick-figure1.png" alt="Human Coin">
+            <h2>$HUMAN</h2>
+            <p class="contract">Ecosystem Token</p>
+            <p>The core token that powers our NFT ecosystem. $HUMAN provides governance rights, staking benefits, and exclusive access to NFT minting events.</p>
+        </div>
+        <div class="token-highlights">
+            <div class="highlight-box">
+                <h3>Total Supply</h3>
+                <p>1,000,000,000 $HUMAN</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Key Features</h3>
+                <p>• NFT Collection Governance</p>
+                <p>• Exclusive Minting Access</p>
+                <p>• Staking Rewards</p>
+            </div>
+            <div class="highlight-box">
+                <h3>Network</h3>
+                <p>Solana Blockchain</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="tokenomics">
+        <h2>$HUMAN Tokenomics</h2>
+        <div class="token-details">
+            <div class="detail-item">
+                <h3>Total Supply</h3>
+                <p>1,000,000,000 $HUMAN</p>
+            </div>
+            <div class="detail-item">
+                <h3>Network</h3>
+                <p>Solana Blockchain</p>
+            </div>
+            <div class="detail-item">
+                <h3>Launch Platform</h3>
+                <p>PumpFun</p>
+            </div>
+            <div class="detail-item">
+                <h3>Distribution</h3>
+                <p>100% Fair Launch - No Team Allocation</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="how-it-works">
+        <div class="section-header">
+            <img src="Pump_fun_logo.png" alt="Pump.fun Icon" class="section-icon">
+            <h2>How pump.fun Works</h2>
+        </div>
+        <div class="mechanism">
+            <div class="mechanism-item">
+                <h3>Fair Launch on PumpFun</h3>
+                <p>$HUMAN will launch on the PumpFun platform, ensuring a fair launch with no presale and no team allocation. No hidden allocations, no private sales - just pure fairness.</p>
+            </div>
+            <div class="mechanism-item">
+                <h3>Anti-Rug Protection</h3>
+                <p>PumpFun's innovative system prevents rug pulls by implementing strict security measures. All tokens launched on PumpFun are verified safe, with no hidden team allocations or presales.</p>
+            </div>
+            <div class="mechanism-item">
+                <h3>Equal Opportunity</h3>
+                <p>Everyone gets the same chance to participate. No hidden allocations, no private sales - just a fair community launch.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="contracts">
+        <h2>Smart Contracts</h2>
+        <div class="contract-item">
+            <span>$HUMAN Token:</span>
+            <code>0x...</code>
+            <button onclick="copyContract(this)" data-contract="0x...">Copy</button>
+        </div>
+        <div class="contract-item">
+            <span>NFT Collection:</span>
+            <code>0x...</code>
+            <button onclick="copyContract(this)" data-contract="0x...">Copy</button>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="team">
+        <h2>The Creator</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="stick-figure1.png" alt="Human Creator">
+                <h3>Human</h3>
+                <p>Founder & Creator</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="faq">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-question">What is $HUMAN token?</div>
+            <div class="faq-answer">$HUMAN is our ecosystem token built on the Solana blockchain with a total supply of 1 billion tokens. It provides governance rights and exclusive access to NFT minting events.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">How can I participate in the token launch?</div>
+            <div class="faq-answer">$HUMAN will launch exclusively on the PumpFun platform, ensuring a fair launch with no presale and no team allocation. Everyone gets an equal opportunity to participate.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">What is PumpFun and how does it protect investors?</div>
+            <div class="faq-answer">PumpFun is a secure launch platform that prevents rug pulls by implementing strict security measures. All tokens launched on PumpFun are verified safe, with no hidden team allocations or presales.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">What makes THE ESSENTIALS NFT Collection unique?</div>
+            <div class="faq-answer">THE ESSENTIALS is a unique NFT collection representing the five fundamental human needs: Water, Food, Air, Shelter, and Companion. Each collection is artistically crafted and provides unique utility within our ecosystem.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">How can I purchase NFTs?</div>
+            <div class="faq-answer">Our NFTs will be available for minting on our website using SOL. Join our community to stay updated on the launch date and whitelist opportunities.</div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="newsletter">
+        <h2>Stay Updated</h2>
+        <p>Subscribe to our newsletter for the latest updates and exclusive offers</p>
+        <form class="subscribe-form">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit">Subscribe</button>
+        </form>
+    </div>
+
+    <div class="separator"></div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="theEssentials.jpg" alt="THE ESSENTIALS Logo">
+                <h3>THE ESSENTIALS</h3>
+                <p>Empowering humanity through NFTs</p>
+            </div>
+            <div class="social-links">
+                <a href="https://twitter.com/TheHumanCoin" target="_blank" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                <a href="https://t.me/TheHumanCoin" target="_blank" class="social-icon">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram</span>
+                </a>
+                <a href="#" class="social-icon">
+                    <i class="fab fa-discord"></i>
+                    <span>Discord</span>
+                </a>
+            </div>
+            <p class="copyright"> 2024 THE ESSENTIALS. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.documentElement;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Countdown Timer
+        function updateCountdown() {
+            const launchDate = new Date('2024-03-01T00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            if (distance < 0) {
+                clearInterval(countdownTimer);
+                document.querySelector('.mint-button').disabled = false;
+                document.querySelector('.mint-button').textContent = 'Mint Now';
+            }
+        }
+
+        const countdownTimer = setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Contract Copy Function
+        function copyContract(button) {
+            const contract = button.getAttribute('data-contract');
+            navigator.clipboard.writeText(contract).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // FAQ Toggle
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        // Newsletter Form
+        document.querySelector('.subscribe-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            alert('Thank you for subscribing! We will keep you updated.');
+            e.target.reset();
+        });
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+    </script>
+    <style>
+        .header-buttons {
+            margin-top: 15px;
+        }
+
+        .marketing-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 25px;
+            border: 2px dashed var(--border);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .marketing-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--shadow);
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+        }
+    </style>
+</body>
+</html>

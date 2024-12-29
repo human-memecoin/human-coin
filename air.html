@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air - THE ESSENTIALS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #c0c0c0;    /* Silver */
+            --secondary-color: #d3d3d3;   /* Light Gray */
+            --accent-color: #f5f5f5;      /* White Smoke */
+            --text-color: #ffffff;
+            --bg-color: #708090;         /* Slate Gray */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            border: 3px dashed var(--accent-color);
+            border-radius: 50%;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .header img:hover {
+            transform: scale(1.1);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            color: var(--accent-color);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .air-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--accent-color);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons {
+            position: fixed;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            border: 2px solid var(--accent-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-button:hover::before {
+            transform: translateX(0);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            border: 2px solid var(--accent-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .home-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2));
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .home-button:hover::before {
+            transform: translateX(0);
+        }
+
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        footer {
+            background: rgba(192, 192, 192, 0.1);    /* Semi-transparent Silver */
+            padding: 40px 0;
+            margin-top: 60px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .footer-logo h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .footer-logo p {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .social-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .social-icon i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .social-icon span {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            color: var(--accent-color);
+        }
+
+        .copyright {
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .air-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            background: 
+                radial-gradient(circle at 10% 20%, var(--accent-color) 0%, transparent 20%),
+                radial-gradient(circle at 90% 30%, var(--secondary-color) 0%, transparent 20%),
+                radial-gradient(circle at 30% 70%, var(--primary-color) 0%, transparent 20%),
+                radial-gradient(circle at 70% 80%, var(--accent-color) 0%, transparent 20%);
+            animation: ripple 15s infinite linear;
+        }
+
+        @keyframes ripple {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header img {
+                width: 150px;
+                height: 150px;
+            }
+
+            .air-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-links {
+                gap: 20px;
+            }
+
+            .footer-logo img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="air-background"></div>
+    <a href="index.html" class="home-button">← Home</a>
+    
+    <div class="nav-buttons">
+        <a href="water.html" class="nav-button">← Back to Water</a>
+        <a href="shelter.html" class="nav-button">Next: Shelter →</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <img src="air-icon.png" alt="Air Essential">
+            <h1>Air Essential</h1>
+            <p>Breathing life into our future</p>
+        </div>
+
+        <section class="section">
+            <h2>About Air Essential</h2>
+            <p>Air is vital for all life on Earth. Our Air Essential NFT collection represents the importance of clean, breathable air and our commitment to protecting this precious resource.</p>
+            
+            <div class="air-stats">
+                <div class="stat-card">
+                    <div class="stat-number">91%</div>
+                    <p>People breathe polluted air</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7M</div>
+                    <p>Deaths yearly from air pollution</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">99%</div>
+                    <p>Cities exceed WHO air limits</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Our Mission</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-wind"></i>
+                    <h3>Clean Air</h3>
+                    <p>Promoting air quality solutions</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-seedling"></i>
+                    <h3>Sustainability</h3>
+                    <p>Supporting eco-friendly initiatives</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-lungs"></i>
+                    <h3>Health</h3>
+                    <p>Protecting respiratory health</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="theEssentials.jpg" alt="THE ESSENTIALS Logo">
+                <h3>THE ESSENTIALS</h3>
+                <p>Empowering humanity through NFTs</p>
+            </div>
+            <div class="social-links">
+                <a href="https://twitter.com/TheHumanCoin" target="_blank" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                    <span>Twitter</span>
+                </a>
+                <a href="https://t.me/TheHumanCoin" target="_blank" class="social-icon">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram</span>
+                </a>
+                <a href="#" class="social-icon">
+                    <i class="fab fa-discord"></i>
+                    <span>Discord</span>
+                </a>
+            </div>
+            <p class="copyright">&copy; 2024 THE ESSENTIALS. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

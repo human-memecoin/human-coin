@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Dashboard | The Essentials</title>
+    <script src="https://platform.twitter.com/widgets.js" async defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #2ECC71;
+            --background: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text: #2D3436;
+            --accent: #FF6B6B;
+            --border: #E0E0E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .stick-figure {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            position: relative;
+            animation: bounce 2s infinite;
+        }
+
+        .stick-figure::before {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .stick-figure::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 40px;
+            background: var(--primary);
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .user-info {
+            margin-top: 1rem;
+        }
+
+        .user-info h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .twitter-handle {
+            color: #1DA1F2;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 2rem;
+            margin-left: 250px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform-origin: center;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .points-card {
+            background: linear-gradient(135deg, var(--primary), #8B80FF);
+            color: white;
+        }
+
+        .points-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            animation: slideIn 0.3s ease;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            margin-right: 1rem;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .task-checkbox.completed::after {
+            content: '✓';
+            position: absolute;
+            color: var(--primary);
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            border-radius: 4px;
+            width: 0%;
+            animation: progressFill 1s ease forwards;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes progressFill {
+            to { width: var(--progress); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                margin-bottom: 2rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .twitter-login-btn {
+            background: #1DA1F2;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem auto;
+            transition: transform 0.3s ease;
+        }
+
+        .twitter-login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto;
+            border: 3px solid var(--primary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <h2>Welcome to Marketing Dashboard</h2>
+            <p>Sign in with Twitter to track your progress</p>
+            <button onclick="loginWithTwitter()" class="twitter-login-btn">
+                <i class="fab fa-twitter"></i>
+                Sign in with Twitter
+            </button>
+        </div>
+    </div>
+
+    <aside class="sidebar">
+        <div class="profile-section">
+            <img id="userAvatar" class="profile-avatar" src="placeholder-avatar.png" alt="Profile Picture">
+            <div class="user-info">
+                <h3 id="userName">Loading...</h3>
+                <p id="userHandle" class="twitter-handle">@loading...</p>
+                <p id="userId">ID: #loading...</p>
+            </div>
+        </div>
+        <nav>
+            <ul class="task-list">
+                <li class="task-item">
+                    <span class="task-checkbox"></span>
+                    <span>Dashboard</span>
+                </li>
+                <li class="task-item">
+                    <span class="task-checkbox"></span>
+                    <span>Tasks</span>
+                </li>
+                <li class="task-item">
+                    <span class="task-checkbox"></span>
+                    <span>Rewards</span>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Marketing Dashboard</h1>
+        <div class="dashboard-grid">
+            <div class="card points-card">
+                <h2>Total Points</h2>
+                <div class="points-number">2,500</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="--progress: 75%"></div>
+                </div>
+                <p>75% to next level</p>
+            </div>
+
+            <div class="card">
+                <h2>Active Tasks</h2>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <span class="task-checkbox completed"></span>
+                        <span>Share daily post</span>
+                    </li>
+                    <li class="task-item">
+                        <span class="task-checkbox"></span>
+                        <span>Engage with community</span>
+                    </li>
+                    <li class="task-item">
+                        <span class="task-checkbox"></span>
+                        <span>Create content</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>Achievements</h2>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <i class="fas fa-trophy" style="color: gold; margin-right: 1rem;"></i>
+                        <span>Top Contributor</span>
+                    </li>
+                    <li class="task-item">
+                        <i class="fas fa-star" style="color: var(--primary); margin-right: 1rem;"></i>
+                        <span>Early Adopter</span>
+                    </li>
+                    <li class="task-item">
+                        <i class="fas fa-medal" style="color: var(--accent); margin-right: 1rem;"></i>
+                        <span>Task Master</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check login status on page load
+        checkLoginStatus();
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/api/user');
+                if (response.ok) {
+                    const userData = await response.json();
+                    updateUserInterface(userData);
+                    document.getElementById('loginScreen').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        }
+
+        function loginWithTwitter() {
+            window.location.href = '/login/twitter';
+        }
+
+        function updateUserInterface(userData) {
+            document.getElementById('userAvatar').src = userData.avatar_url;
+            document.getElementById('userName').textContent = userData.twitter_handle;
+            document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
+            document.getElementById('userId').textContent = 'ID: #' + userData.id;
+            
+            // Update points and level
+            const pointsNumber = document.querySelector('.points-number');
+            pointsNumber.textContent = userData.points.toLocaleString();
+            
+            // Calculate level progress
+            const expNeeded = userData.level * 1000; // Example: each level needs level * 1000 exp
+            const progress = (userData.exp / expNeeded) * 100;
+            document.querySelector('.progress-fill').style.setProperty('--progress', `${progress}%`);
+            document.querySelector('.points-card p').textContent = 
+                `${progress.toFixed(1)}% to level ${userData.level + 1}`;
+        }
+
+        // Function to update user progress
+        async function updateProgress(points, exp) {
+            try {
+                const response = await fetch('/api/update_progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        points: points,
+                        exp: exp,
+                        level: Math.floor(exp / 1000) + 1
+                    })
+                });
+                
+                if (response.ok) {
+                    checkLoginStatus(); // Refresh the UI
+                }
+            } catch (error) {
+                console.error('Error updating progress:', error);
+            }
+        }
+
+        // Example: Update progress when completing a task
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', async () => {
+                if (!checkbox.classList.contains('completed')) {
+                    checkbox.classList.add('completed');
+                    // Award points and exp for completing a task
+                    await updateProgress(100, 50); // Example: 100 points and 50 exp per task
+                }
+            });
+        });
+    </script>
+</body>
+</html>
