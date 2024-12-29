@@ -242,16 +242,16 @@
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    },
-                    mode: 'cors'
+                    }
                 });
                 
-                if (response.ok) {
-                    const userData = await response.json();
-                    console.log('User data:', userData);  // Debug log
+                const data = await response.json();
+                
+                if (response.ok && data.twitter_handle) {
+                    console.log('Already logged in as:', data.twitter_handle);
                     window.location.href = 'dashboard/index.html';
                 } else {
-                    console.log('Not logged in, status:', response.status);  // Debug log
+                    console.log('Not logged in, showing login screen');
                     document.querySelector('.login-screen').style.display = 'block';
                 }
             } catch (error) {

@@ -77,6 +77,32 @@ def twitter_authorize():
         session.permanent = True
         session['user_id'] = user_info['id']
         
+        # Store user data in database
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Update user information
+        c.execute('''
+            INSERT OR REPLACE INTO users 
+            (id, twitter_handle, avatar_url, points, level, exp, last_login) 
+            VALUES (?, ?, ?, 
+                COALESCE((SELECT points FROM users WHERE id = ?), 0),
+                COALESCE((SELECT level FROM users WHERE id = ?), 1),
+                COALESCE((SELECT exp FROM users WHERE id = ?), 0),
+                ?)
+        ''', (
+            user_info['id'],
+            user_info['username'],
+            user_info.get('profile_image_url', ''),
+            user_info['id'],
+            user_info['id'],
+            user_info['id'],
+            datetime.now()
+        ))
+        
+        conn.commit()
+        conn.close()
+        
         # Create response with cookies
         response = make_response(redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html'))
         
@@ -89,18 +115,7 @@ def twitter_authorize():
             httponly=True,
             samesite='None',
             max_age=max_age,
-            domain='onrender.com'  # Updated domain
-        )
-        
-        # Set additional session cookie
-        response.set_cookie(
-            'session',
-            request.cookies.get('session', ''),
-            secure=True,
-            httponly=True,
-            samesite='None',
-            max_age=max_age,
-            domain='onrender.com'  # Updated domain
+            domain='onrender.com'
         )
         
         return response
