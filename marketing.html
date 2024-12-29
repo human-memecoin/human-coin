@@ -270,6 +270,13 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        #dashboard {
+            display: none;
+        }
+        #loginScreen {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -371,6 +378,7 @@
                 
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log('User data:', userData);  // Debug log
                     updateUserInterface(userData);
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
@@ -378,9 +386,15 @@
                     if (window.location.hash === '#dashboard') {
                         showDashboard();
                     }
+                } else {
+                    console.log('Not logged in');  // Debug log
+                    document.getElementById('loginScreen').style.display = 'block';
+                    document.getElementById('dashboard').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
             }
         }
 
@@ -391,27 +405,29 @@
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            // Scroll to dashboard
             document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
         }
 
         function updateUserInterface(userData) {
-            document.getElementById('userAvatar').src = userData.avatar_url;
-            document.getElementById('userName').textContent = userData.twitter_handle;
+            console.log('Updating UI with user data:', userData);  // Debug log
             document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
-            document.getElementById('userId').textContent = 'ID: #' + userData.id;
+            document.getElementById('userAvatar').src = userData.avatar_url;
+            document.getElementById('userPoints').textContent = userData.points;
+            document.getElementById('userLevel').textContent = userData.level;
             
-            // Update points and level
-            const pointsNumber = document.querySelector('.points-number');
-            pointsNumber.textContent = userData.points.toLocaleString();
-            
-            // Calculate level progress
-            const expNeeded = userData.level * 1000; // Example: each level needs level * 1000 exp
-            const progress = (userData.exp / expNeeded) * 100;
-            document.querySelector('.progress-fill').style.setProperty('--progress', `${progress}%`);
-            document.querySelector('.points-card p').textContent = 
-                `${progress.toFixed(1)}% to level ${userData.level + 1}`;
+            // Calculate progress percentage
+            const expPerLevel = 100;
+            const progress = (userData.exp / expPerLevel) * 100;
+            document.getElementById('expProgress').style.width = progress + '%';
+            document.getElementById('expText').textContent = userData.exp + ' / ' + expPerLevel;
         }
+
+        // Check login status when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking login status');  // Debug log
+            checkLoginStatus();
+            checkUrlErrors();
+        });
 
         // Function to update user progress
         async function updateProgress(points, exp) {
@@ -458,12 +474,6 @@
                 document.getElementById('loginScreen').appendChild(errorMessage);
             }
         }
-
-        // Run on page load
-        window.addEventListener('load', () => {
-            checkLoginStatus();
-            checkUrlErrors();
-        });
     </script>
 </body>
 </html>
