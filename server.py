@@ -36,9 +36,10 @@ twitter = oauth.register(
     access_token_url='https://api.twitter.com/2/oauth2/token',
     authorize_url='https://twitter.com/i/oauth2/authorize',
     client_kwargs={
-        'scope': 'tweet.read users.read follows.read',
+        'scope': 'tweet.read users.read follows.read offline.access email',
         'token_endpoint_auth_method': 'client_secret_basic',
-        'code_challenge_method': 'S256'
+        'code_challenge_method': 'S256',
+        'response_type': 'code'
     }
 )
 
@@ -50,7 +51,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             twitter_handle TEXT,
+            email TEXT,
             avatar_url TEXT,
+            verified BOOLEAN,
+            description TEXT,
             points INTEGER DEFAULT 0,
             level INTEGER DEFAULT 1,
             exp INTEGER DEFAULT 0,
@@ -71,7 +75,10 @@ def index():
 @app.route('/login/twitter')
 def twitter_login():
     callback = 'https://human-coin-server.onrender.com/oauth/callback'
-    return twitter.authorize_redirect(callback)
+    return twitter.authorize_redirect(
+        callback,
+        state=os.urandom(16).hex()
+    )
 
 @app.route('/oauth/callback')
 def twitter_authorize():
@@ -79,7 +86,7 @@ def twitter_authorize():
         token = twitter.authorize_access_token()
         
         # Get user profile with additional fields
-        resp = twitter.get('users/me?user.fields=profile_image_url,username', token=token)
+        resp = twitter.get('users/me?user.fields=profile_image_url,username,email,verified,description', token=token)
         user_data = resp.json()
         
         if 'data' not in user_data:
@@ -101,12 +108,18 @@ def twitter_authorize():
             c.execute('''
                 UPDATE users 
                 SET twitter_handle = ?,
+                    email = ?,
                     avatar_url = ?,
+                    verified = ?,
+                    description = ?,
                     last_login = ?
                 WHERE id = ?
             ''', (
                 user_info['username'],
+                user_info.get('email', ''),
                 user_info.get('profile_image_url', ''),
+                user_info.get('verified', False),
+                user_info.get('description', ''),
                 datetime.now(),
                 user_info['id']
             ))
@@ -114,12 +127,16 @@ def twitter_authorize():
             # Create new user
             c.execute('''
                 INSERT INTO users 
-                (id, twitter_handle, avatar_url, points, level, exp, created_at, last_login) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (id, twitter_handle, email, avatar_url, verified, description, 
+                 points, level, exp, created_at, last_login) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (
                 user_info['id'],
                 user_info['username'],
+                user_info.get('email', ''),
                 user_info.get('profile_image_url', ''),
+                user_info.get('verified', False),
+                user_info.get('description', ''),
                 0,  # initial points
                 1,  # initial level
                 0,  # initial exp
@@ -179,7 +196,7 @@ def get_user():
     
     # Get user data
     c.execute('''
-        SELECT id, twitter_handle, avatar_url, points, level, exp, created_at, last_login, last_updated
+        SELECT id, twitter_handle, email, avatar_url, verified, description, points, level, exp, created_at, last_login, last_updated
         FROM users 
         WHERE id = ?
     ''', (user_id,))
@@ -190,13 +207,16 @@ def get_user():
         response = jsonify({
             'id': user[0],
             'twitter_handle': user[1],
-            'avatar_url': user[2],
-            'points': user[3] or 0,
-            'level': user[4] or 1,
-            'exp': user[5] or 0,
-            'created_at': user[6],
-            'last_login': user[7],
-            'last_updated': user[8]
+            'email': user[2],
+            'avatar_url': user[3],
+            'verified': user[4],
+            'description': user[5],
+            'points': user[6] or 0,
+            'level': user[7] or 1,
+            'exp': user[8] or 0,
+            'created_at': user[9],
+            'last_login': user[10],
+            'last_updated': user[11]
         })
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
