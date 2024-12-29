@@ -85,12 +85,16 @@ def twitter_authorize():
         # Update user information
         c.execute('''
             INSERT OR REPLACE INTO users 
-            (id, twitter_handle, avatar_url, points, level, exp, last_login) 
+            (id, twitter_handle, avatar_url, points, level, exp, phantom_wallet, referral_code, referred_by, tasks, created_at) 
             VALUES (?, ?, ?, 
                 COALESCE((SELECT points FROM users WHERE id = ?), 0),
                 COALESCE((SELECT level FROM users WHERE id = ?), 1),
                 COALESCE((SELECT exp FROM users WHERE id = ?), 0),
-                ?)
+                '',
+                '',
+                '',
+                '',
+                CURRENT_TIMESTAMP)
         ''', (
             user_info['id'],
             user_info['username'],
@@ -98,7 +102,6 @@ def twitter_authorize():
             user_info['id'],
             user_info['id'],
             user_info['id'],
-            datetime.now()
         ))
         
         conn.commit()
@@ -308,25 +311,203 @@ def verify_follow():
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 
+@app.route('/api/connect_wallet', methods=['POST'])
+def connect_wallet():
+    try:
+        if 'user_id' not in session:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        data = request.json
+        wallet_address = data.get('wallet_address')
+        
+        if not wallet_address:
+            response = make_response(jsonify({'error': 'Wallet address required'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        c.execute('UPDATE users SET phantom_wallet = ? WHERE id = ?', (wallet_address, session['user_id']))
+        conn.commit()
+        conn.close()
+
+        response = make_response(jsonify({'message': 'Wallet connected successfully'}))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error connecting wallet: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/referral', methods=['POST'])
+def use_referral():
+    try:
+        if 'user_id' not in session:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        data = request.json
+        referral_code = data.get('referral_code')
+        
+        if not referral_code:
+            response = make_response(jsonify({'error': 'Referral code required'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Check if referral code exists
+        c.execute('SELECT id FROM users WHERE referral_code = ?', (referral_code,))
+        referrer = c.fetchone()
+        
+        if not referrer:
+            conn.close()
+            response = make_response(jsonify({'error': 'Invalid referral code'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        # Check if user already used a referral code
+        c.execute('SELECT referred_by FROM users WHERE id = ?', (session['user_id'],))
+        existing_referral = c.fetchone()
+        
+        if existing_referral and existing_referral[0]:
+            conn.close()
+            response = make_response(jsonify({'error': 'Already used a referral code'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        # Update user with referral
+        c.execute('UPDATE users SET referred_by = ?, points = points + 100 WHERE id = ?', 
+                 (referrer[0], session['user_id']))
+        
+        # Give points to referrer
+        c.execute('UPDATE users SET points = points + 200 WHERE id = ?', (referrer[0],))
+        
+        conn.commit()
+        conn.close()
+
+        response = make_response(jsonify({
+            'message': 'Referral code applied successfully',
+            'points_earned': 100
+        }))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error using referral: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/leaderboard', methods=['GET'])
+def get_leaderboard():
+    try:
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Get top 100 users by points
+        c.execute('''
+            SELECT twitter_handle, points, level, phantom_wallet 
+            FROM users 
+            ORDER BY points DESC 
+            LIMIT 100
+        ''')
+        
+        leaderboard = []
+        for i, (handle, points, level, wallet) in enumerate(c.fetchall(), 1):
+            leaderboard.append({
+                'rank': i,
+                'handle': handle,
+                'points': points,
+                'level': level,
+                'wallet': wallet[:6] + '...' + wallet[-4:] if wallet else None
+            })
+            
+        conn.close()
+
+        response = make_response(jsonify({'leaderboard': leaderboard}))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error getting leaderboard: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/verify_task', methods=['POST'])
+def verify_task():
+    try:
+        if 'user_id' not in session:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        data = request.json
+        task_type = data.get('task_type')
+        
+        # Simulate verification delay
+        time.sleep(65)  # Wait for 65 seconds
+        
+        # Always verify successfully for now
+        # In production, implement actual verification logic
+        is_verified = True
+        
+        response = make_response(jsonify({
+            'verified': is_verified,
+            'message': f'Task {task_type} verified successfully'
+        }))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error verifying task: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
 def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
+    
+    # Create users table with new fields
     c.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             twitter_handle TEXT,
-            email TEXT,
             avatar_url TEXT,
-            verified BOOLEAN,
-            description TEXT,
             points INTEGER DEFAULT 0,
             level INTEGER DEFAULT 1,
             exp INTEGER DEFAULT 0,
-            created_at TIMESTAMP,
-            last_login TIMESTAMP,
-            last_updated TIMESTAMP
+            phantom_wallet TEXT,
+            referral_code TEXT UNIQUE,
+            referred_by TEXT,
+            tasks TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    
     conn.commit()
     conn.close()
 

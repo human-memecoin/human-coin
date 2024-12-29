@@ -8,419 +8,259 @@
     <style>
         :root {
             --primary: #6C63FF;
-            --secondary: #2ECC71;
-            --background: #F8F9FA;
-            --text: #2D3436;
-            --accent: #FF6B6B;
+            --secondary: #27AE60;
+            --background: #F8F9FD;
             --card: #FFFFFF;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            --text: #2D3748;
+            --text-secondary: #718096;
+            --error: #E53E3E;
+            --success: #48BB78;
         }
 
         body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background: var(--background);
-            min-height: 100vh;
+            color: var(--text);
             display: grid;
             grid-template-columns: 300px 1fr;
-            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1440px;
+            margin: 0 auto;
         }
 
         .sidebar {
             background: var(--card);
             padding: 2rem;
-            height: 100vh;
-            position: fixed;
-            width: 300px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
         }
 
-        .profile-section {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: var(--card);
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar-container {
-            width: 100px;
-            height: 100px;
-            margin: 20px auto;
-            position: relative;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .profile-photo {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--primary);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .profile-info h2 {
-            margin: 0.5rem 0;
-            color: var(--text);
-        }
-
-        .twitter-handle {
-            color: var(--primary);
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        .stats-container {
+        .main-content {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 2rem;
         }
 
-        .stat-card {
-            background: var(--card);
-            padding: 1rem;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 0.5rem 0;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .exp-bar-container {
+        .wallet-section {
             margin: 2rem 0;
             text-align: center;
         }
 
-        .exp-bar {
-            height: 10px;
-            background: rgba(108, 99, 255, 0.2);
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .exp-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .exp-text {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .logout-btn {
-            background: var(--accent);
+        .connect-wallet-btn {
+            background: linear-gradient(135deg, #9945FF, #6C63FF);
             color: white;
             border: none;
             padding: 1rem 2rem;
-            border-radius: 50px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
             width: 100%;
-            margin-top: auto;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-        }
-
-        .logout-btn:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
-        }
-
-        .logout-btn:active {
-            transform: translateY(0);
-        }
-
-        .main-content {
-            margin-left: 300px;
-            padding: 2rem;
-        }
-
-        .dashboard-header {
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .welcome-text {
-            font-size: 2rem;
-            font-weight: 600;
-        }
-
-        .tasks-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .task-card {
-            background: var(--card);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transition: transform 0.3s ease;
         }
 
-        .task-card:hover {
-            transform: translateY(-5px);
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
         }
 
-        .task-header {
+        .wallet-address {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .referral-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(108, 99, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        .referral-input {
             display: flex;
-            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 1rem;
         }
 
-        .task-icon {
-            font-size: 24px;
-            margin-right: 1rem;
-        }
-
-        .task-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        .task-progress {
-            margin-top: 1rem;
-        }
-
-        .task-progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(108, 99, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .task-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--secondary), #87D68D);
-            transition: width 0.5s ease;
-        }
-
-        .level-info {
-            display: flex;
-            justify-content: space-between;
+        .referral-input input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid rgba(108, 99, 255, 0.2);
+            border-radius: 8px;
             font-size: 0.9rem;
-            color: var(--text);
-            opacity: 0.8;
         }
 
-        .task-button {
+        .referral-btn {
             background: var(--primary);
             color: white;
             border: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-            width: 100%;
         }
 
-        .task-button:hover {
-            transform: translateY(-2px);
-            background: #5b52ff;
-        }
-
-        .task-button:active {
-            transform: translateY(0);
-        }
-
-        .verify-button {
-            background: var(--secondary);
-            margin-top: 0.5rem;
-        }
-
-        .verify-button:hover {
-            background: #27ae60;
-        }
-
-        .section-header {
-            margin: 2rem 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid rgba(108, 99, 255, 0.1);
-        }
-
-        .completed-tasks .task-card {
-            opacity: 0.8;
-            background: linear-gradient(45deg, var(--card), #f5f5f5);
-        }
-
-        .completed-tasks .task-card .task-icon {
-            color: var(--secondary);
-        }
-
-        .verification-message {
-            margin-top: 0.5rem;
+        .referral-info {
             font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-container {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .leaderboard-entry {
+            display: grid;
+            grid-template-columns: 50px 1fr auto auto auto;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        .leaderboard-entry:hover {
+            background: rgba(108, 99, 255, 0.05);
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .leaderboard-handle {
             color: var(--text);
-            text-align: center;
-            opacity: 0.8;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
+        .leaderboard-points {
+            color: var(--secondary);
+            font-weight: 500;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .leaderboard-level {
+            background: rgba(108, 99, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--primary);
         }
 
-        .task-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 768px) {
-            body {
+        @media (max-width: 1200px) {
+            .dashboard-container {
                 grid-template-columns: 1fr;
             }
 
             .sidebar {
                 position: static;
-                width: 100%;
-                height: auto;
-                padding: 1rem;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-            }
-
-            .tasks-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .animate-in {
-            animation: slideIn 0.5s ease forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
             }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="profile-section">
-            <div class="avatar-container">
-                <img id="profilePhoto" class="profile-photo" src="" alt="Profile Photo">
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="profile-section">
+                <div class="avatar-container">
+                    <img id="profilePhoto" class="profile-photo" src="" alt="Profile Photo">
+                </div>
+                <div class="profile-info">
+                    <h2 id="username">Loading...</h2>
+                    <p id="twitterHandle" class="twitter-handle">@loading</p>
+                </div>
             </div>
-            <div class="profile-info">
-                <h2 id="username">Loading...</h2>
-                <p id="twitterHandle" class="twitter-handle">@loading</p>
+
+            <div class="wallet-section">
+                <button id="connectWalletBtn" class="connect-wallet-btn">
+                    <span class="wallet-icon">👛</span>
+                    Connect Phantom Wallet
+                </button>
+                <div id="walletAddress" class="wallet-address"></div>
             </div>
+
+            <div class="referral-section">
+                <div class="referral-input">
+                    <input type="text" id="referralCode" placeholder="Enter referral code">
+                    <button onclick="useReferralCode()" class="referral-btn">Apply</button>
+                </div>
+                <div class="referral-info">
+                    <p>Get 100 points for using a referral code</p>
+                    <p>Get 200 points when others use your code</p>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="pointsValue">0</div>
+                    <div class="stat-label">Points</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="levelValue">1</div>
+                    <div class="stat-label">Level</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" id="tasksValue">0</div>
+                    <div class="stat-label">Tasks</div>
+                </div>
+            </div>
+
+            <div class="exp-bar-container">
+                <div class="exp-bar">
+                    <div id="expFill" class="exp-fill"></div>
+                </div>
+                <div class="exp-text" id="expText">0 / 100 XP</div>
+            </div>
+
+            <button onclick="logout()" class="logout-btn">
+                <span>🚪</span>
+                Sign Out
+            </button>
         </div>
 
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-value" id="pointsValue">0</div>
-                <div class="stat-label">Points</div>
+        <div class="main-content">
+            <div class="tasks-section">
+                <div class="section-header">
+                    <h2>Active Tasks</h2>
+                </div>
+                <div id="activeTasks" class="tasks-container">
+                    <!-- Active tasks will be dynamically added here -->
+                </div>
+
+                <div class="section-header">
+                    <h2>Completed Tasks</h2>
+                </div>
+                <div id="completedTasks" class="tasks-container completed-tasks">
+                    <!-- Completed tasks will be dynamically added here -->
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-value" id="levelValue">1</div>
-                <div class="stat-label">Level</div>
+
+            <div class="leaderboard-section">
+                <div class="section-header">
+                    <h2>Leaderboard</h2>
+                </div>
+                <div id="leaderboard" class="leaderboard-container">
+                    <!-- Leaderboard entries will be dynamically added here -->
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value" id="tasksValue">0</div>
-                <div class="stat-label">Tasks</div>
-            </div>
-        </div>
-
-        <div class="exp-bar-container">
-            <div class="exp-bar">
-                <div id="expFill" class="exp-fill"></div>
-            </div>
-            <div class="exp-text" id="expText">0 / 100 XP</div>
-        </div>
-
-        <button onclick="logout()" class="logout-btn">
-            <span>🚪</span>
-            Sign Out
-        </button>
-    </div>
-
-    <div class="main-content">
-        <div class="dashboard-header">
-            <h1 class="welcome-text">Welcome, <span id="welcomeName">Human!</span></h1>
-        </div>
-
-        <div class="section-header">
-            <h2>Active Tasks</h2>
-        </div>
-        <div id="activeTasks" class="tasks-container">
-            <!-- Active tasks will be dynamically added here -->
-        </div>
-
-        <div class="section-header">
-            <h2>Completed Tasks</h2>
-        </div>
-        <div id="completedTasks" class="tasks-container completed-tasks">
-            <!-- Completed tasks will be dynamically added here -->
         </div>
     </div>
 
@@ -816,9 +656,151 @@
             }, 3000);
         }
 
+        // Add Phantom Wallet integration
+        let phantomWallet = null;
+
+        async function connectPhantomWallet() {
+            try {
+                if (!window.solana || !window.solana.isPhantom) {
+                    window.open('https://phantom.app/', '_blank');
+                    return;
+                }
+
+                const provider = window.solana;
+                await provider.connect();
+                phantomWallet = provider;
+
+                const walletAddress = provider.publicKey.toString();
+                document.getElementById('walletAddress').textContent = 
+                    walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+
+                // Save wallet address to server
+                await fetch('https://human-coin-server.onrender.com/api/connect_wallet', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ wallet_address: walletAddress })
+                });
+
+                document.getElementById('connectWalletBtn').textContent = 'Wallet Connected';
+                document.getElementById('connectWalletBtn').disabled = true;
+
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                alert('Failed to connect wallet. Please try again.');
+            }
+        }
+
+        // Add referral system
+        async function useReferralCode() {
+            const code = document.getElementById('referralCode').value;
+            if (!code) {
+                alert('Please enter a referral code');
+                return;
+            }
+
+            try {
+                const response = await fetch('https://human-coin-server.onrender.com/api/referral', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ referral_code: code })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert(`Success! You earned ${data.points_earned} points!`);
+                    fetchUserData();  // Refresh user data
+                } else {
+                    alert(data.error || 'Failed to use referral code');
+                }
+            } catch (error) {
+                console.error('Error using referral:', error);
+                alert('Failed to use referral code. Please try again.');
+            }
+        }
+
+        // Add leaderboard
+        async function updateLeaderboard() {
+            try {
+                const response = await fetch('https://human-coin-server.onrender.com/api/leaderboard', {
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                const container = document.getElementById('leaderboard');
+                container.innerHTML = '';
+
+                data.leaderboard.forEach(entry => {
+                    const div = document.createElement('div');
+                    div.className = 'leaderboard-entry';
+                    div.innerHTML = `
+                        <div class="leaderboard-rank">#${entry.rank}</div>
+                        <div class="leaderboard-handle">@${entry.handle}</div>
+                        <div class="leaderboard-points">${entry.points} pts</div>
+                        <div class="leaderboard-level">Level ${entry.level}</div>
+                        ${entry.wallet ? `<div class="leaderboard-wallet">${entry.wallet}</div>` : ''}
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error updating leaderboard:', error);
+            }
+        }
+
+        // Update task verification
+        async function verifyTask(taskType) {
+            const verifyButton = document.getElementById(`${taskType}Verify`);
+            const msgElement = document.getElementById(`${taskType}VerificationMsg`);
+            
+            try {
+                verifyButton.disabled = true;
+                verifyButton.innerHTML = '<span class="loading-spinner"></span>Verifying...';
+                msgElement.className = 'verification-message info';
+                msgElement.textContent = 'Please wait while we verify your task (this will take over a minute)...';
+                
+                const response = await fetch('https://human-coin-server.onrender.com/api/verify_task', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ task_type: taskType })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.verified) {
+                    await completeTask(taskType);
+                    msgElement.className = 'verification-message success';
+                    msgElement.textContent = 'Verification successful! Points awarded!';
+                    updateTasksDisplay();
+                    updateLeaderboard();
+                } else {
+                    throw new Error(data.message || 'Failed to verify task. Please try again.');
+                }
+            } catch (error) {
+                msgElement.className = 'verification-message error';
+                msgElement.textContent = error.message;
+                verifyButton.disabled = false;
+                verifyButton.textContent = 'Verify Task';
+            }
+        }
+
         // Initialize dashboard
-        fetchUserData().then(() => {
-            updateTasksDisplay();
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchUserData().then(() => {
+                updateTasksDisplay();
+                updateLeaderboard();
+            });
+
+            // Connect wallet button
+            document.getElementById('connectWalletBtn').addEventListener('click', connectPhantomWallet);
         });
     </script>
 </body>
