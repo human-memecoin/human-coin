@@ -7,6 +7,8 @@ import sqlite3
 from dotenv import load_dotenv
 import json
 import time
+import random
+import string
 
 # Load environment variables
 load_dotenv()
@@ -75,7 +77,6 @@ def twitter_authorize():
         user_info = user_data['data']
         
         # Set session data
-        session.permanent = True
         session['user_id'] = user_info['id']
         
         # Store user data in database
@@ -141,24 +142,25 @@ def get_user():
         
         conn = sqlite3.connect('users.db')
         c = conn.cursor()
-        c.execute('SELECT twitter_handle, avatar_url FROM users WHERE id = ?', (user_id,))
+        c.execute('SELECT twitter_handle, avatar_url, points, level, exp, phantom_wallet, referral_code FROM users WHERE id = ?', (user_id,))
         user = c.fetchone()
         conn.close()
         
         if not user:
+            session.clear()
             response = make_response(jsonify({'error': 'User not found'}), 404)
             response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             return response
             
-        twitter_handle, avatar_url = user
-        
         response = make_response(jsonify({
-            'twitter_handle': twitter_handle,
-            'avatar_url': avatar_url,
-            'points': 0,
-            'level': 1,
-            'exp': 0
+            'twitter_handle': user[0],
+            'avatar_url': user[1],
+            'points': user[2] or 0,
+            'level': user[3] or 1,
+            'exp': user[4] or 0,
+            'phantom_wallet': user[5],
+            'referral_code': user[6]
         }))
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -177,12 +179,11 @@ def signout():
         # Clear session
         session.clear()
         
-        # Create response with cookie clearing instructions
+        # Create response
         response = make_response(jsonify({'message': 'Signed out successfully'}))
         
-        # Clear cookies with correct domain and path
-        response.set_cookie('user_session', '', expires=0, secure=True, httponly=True, samesite='None', domain='onrender.com')
-        response.set_cookie('user_session', '', expires=0, secure=True, httponly=True, samesite='None', domain='.onrender.com')
+        # Clear session cookie
+        response.set_cookie('session', '', expires=0, secure=True, httponly=True, samesite='None')
         
         # Set CORS headers
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
@@ -486,6 +487,97 @@ def verify_task():
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
+
+@app.route('/callback')
+def callback():
+    try:
+        # Get the oauth token from query parameters
+        oauth_token = request.args.get('oauth_token')
+        oauth_verifier = request.args.get('oauth_verifier')
+        
+        if not oauth_token or not oauth_verifier:
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=missing_token')
+
+        # Get the request token from the session
+        request_token = session.get('request_token')
+        if not request_token:
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=no_request_token')
+
+        # Create OAuth1Session for verifying credentials
+        twitter = OAuth1Session(
+            client_key=os.getenv('TWITTER_API_KEY'),
+            client_secret=os.getenv('TWITTER_API_SECRET'),
+            resource_owner_key=oauth_token,
+            resource_owner_secret=request_token['oauth_token_secret'],
+            verifier=oauth_verifier
+        )
+
+        # Get the access token
+        access_tokens = twitter.fetch_access_token('https://api.twitter.com/oauth/access_token')
+
+        # Get user information using the access token
+        twitter = OAuth1Session(
+            client_key=os.getenv('TWITTER_API_KEY'),
+            client_secret=os.getenv('TWITTER_API_SECRET'),
+            resource_owner_key=access_tokens['oauth_token'],
+            resource_owner_secret=access_tokens['oauth_token_secret']
+        )
+
+        # Get user profile information
+        response = twitter.get('https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true')
+        user_info = response.json()
+
+        # Store user information in session
+        session['user_id'] = user_info['id_str']
+        session['access_token'] = access_tokens['oauth_token']
+        session['access_token_secret'] = access_tokens['oauth_token_secret']
+        session.permanent = True
+
+        # Store user in database
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Check if user exists
+        c.execute('SELECT id FROM users WHERE id = ?', (user_info['id_str'],))
+        existing_user = c.fetchone()
+        
+        if existing_user:
+            # Update existing user
+            c.execute('''
+                UPDATE users 
+                SET twitter_handle = ?, 
+                    avatar_url = ?
+                WHERE id = ?
+            ''', (
+                user_info['screen_name'],
+                user_info['profile_image_url_https'],
+                user_info['id_str']
+            ))
+        else:
+            # Create new user
+            c.execute('''
+                INSERT INTO users 
+                (id, twitter_handle, avatar_url, points, level, exp, referral_code) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                user_info['id_str'],
+                user_info['screen_name'],
+                user_info['profile_image_url_https'],
+                0,  # points
+                1,  # level
+                0,  # exp
+                ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))  # random referral code
+            ))
+        
+        conn.commit()
+        conn.close()
+
+        # Redirect to dashboard with success parameter
+        return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?login=success')
+
+    except Exception as e:
+        print(f"Error during authorization: {str(e)}")
+        return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=login_failed')
 
 def init_db():
     conn = sqlite3.connect('users.db')

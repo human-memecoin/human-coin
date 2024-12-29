@@ -265,288 +265,32 @@
     </div>
 
     <script>
-        const POINTS_SYSTEM = {
-            checkin: {
-                points: 10,
-                exp: 20,
-                cooldown: 24 * 60 * 60 * 1000 // 24 hours
-            },
-            engage: {
-                points: 5,
-                exp: 10,
-                maxDaily: 3
-            },
-            followHuman: {
-                points: 50,
-                exp: 100,
-                oneTime: true
-            },
-            followEssentials: {
-                points: 50,
-                exp: 100,
-                oneTime: true
-            }
-        };
+        let userData = null;
 
-        let userData = {
-            points: 0,
-            level: 1,
-            exp: 0,
-            tasks: {
-                checkin: { lastCompleted: null, count: 0 },
-                engage: { count: 0, lastReset: null },
-                followHuman: { completed: false },
-                followEssentials: { completed: false }
-            }
-        };
-
-        const TASKS_CONFIG = {
-            checkin: {
-                title: "Daily Check-in",
-                description: "Check in daily to earn points and maintain your streak!",
-                icon: "🎯",
-                points: 10,
-                exp: 20
-            },
-            engage: {
-                title: "Community Engagement",
-                description: "Engage with the community to earn points!",
-                icon: "🤝",
-                points: 5,
-                exp: 10
-            },
-            followHuman: {
-                title: "Follow Human Coin",
-                description: "Follow the official Human Coin Twitter account!",
-                icon: "🐦",
-                points: 50,
-                exp: 100,
-                twitterHandle: "@TheHumanCoin"
-            },
-            followEssentials: {
-                title: "Follow Essentials",
-                description: "Follow the Essentials Twitter account!",
-                icon: "✨",
-                points: 50,
-                exp: 100,
-                twitterHandle: "@Essentials_xyz"
-            }
-        };
-
-        function calculateExpForLevel(level) {
-            return level * 100;
-        }
-
-        async function completeTask(taskType) {
-            const now = new Date();
-            const task = TASKS_CONFIG[taskType];
-            
-            // Check if task is one-time and already completed
-            if (taskType.startsWith('follow') && userData.tasks[taskType].completed) {
-                alert('This task has already been completed!');
-                return;
-            }
-
-            if (taskType === 'checkin') {
-                const lastCompleted = userData.tasks.checkin.lastCompleted;
-                if (lastCompleted && (now - new Date(lastCompleted)) < POINTS_SYSTEM.checkin.cooldown) {
-                    alert('You can only check in once per day!');
-                    return;
-                }
-                userData.tasks.checkin.lastCompleted = now.toISOString();
-                userData.tasks.checkin.count++;
-            } else if (taskType === 'engage') {
-                const today = new Date().toDateString();
-                if (userData.tasks.engage.lastReset !== today) {
-                    userData.tasks.engage.count = 0;
-                    userData.tasks.engage.lastReset = today;
-                }
-                if (userData.tasks.engage.count >= POINTS_SYSTEM.engage.maxDaily) {
-                    alert('You have reached the maximum engagements for today!');
-                    return;
-                }
-                userData.tasks.engage.count++;
-            } else if (taskType === 'followHuman' || taskType === 'followEssentials') {
-                userData.tasks[taskType].completed = true;
-            }
-
-            // Update points and exp
-            userData.points += task.points;
-            userData.exp += task.exp;
-
-            // Check for level up
-            const expNeeded = calculateExpForLevel(userData.level);
-            if (userData.exp >= expNeeded) {
-                userData.level++;
-                userData.exp -= expNeeded;
-                showLevelUpMessage(userData.level);
-            }
-
-            // Save to server
+        async function checkAuth() {
             try {
-                await fetch('https://human-coin-server.onrender.com/api/update_progress', {
-                    method: 'POST',
+                const response = await fetch('https://human-coin-server.onrender.com/api/user', {
+                    method: 'GET',
                     credentials: 'include',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(userData)
-                });
-            } catch (error) {
-                console.error('Error saving progress:', error);
-            }
-
-            // Update UI
-            updateUI();
-            updateTasksDisplay();
-        }
-
-        function createTaskCard(taskType, isCompleted = false) {
-            const task = TASKS_CONFIG[taskType];
-            const card = document.createElement('div');
-            card.className = 'task-card';
-            card.id = `task-${taskType}`;
-            
-            card.innerHTML = `
-                <div class="task-header">
-                    <span class="task-icon">${task.icon}</span>
-                    <h3 class="task-title">${task.title}</h3>
-                </div>
-                <p>${task.description}</p>
-                <div class="task-progress">
-                    <div class="task-progress-bar">
-                        <div id="${taskType}Progress" class="task-progress-fill" style="width: ${isCompleted ? '100%' : '0%'}"></div>
-                    </div>
-                    <div id="${taskType}Status">${isCompleted ? 'Completed!' : 'Not completed'}</div>
-                </div>
-                ${!isCompleted ? `
-                    ${task.twitterHandle ? `
-                        <button onclick="openTwitterFollow('${taskType}')" class="task-button">Follow ${task.title}</button>
-                        <button onclick="verifyFollow('${taskType}')" class="task-button verify-button" id="${taskType}Verify">
-                            Verify Follow
-                        </button>
-                    ` : `
-                        <button onclick="completeTask('${taskType}')" class="task-button">Complete Task</button>
-                    `}
-                    <div id="${taskType}VerificationMsg" class="verification-message"></div>
-                ` : ''}
-            `;
-            
-            return card;
-        }
-
-        async function verifyFollow(taskType) {
-            const verifyButton = document.getElementById(`${taskType}Verify`);
-            const msgElement = document.getElementById(`${taskType}VerificationMsg`);
-            
-            try {
-                verifyButton.disabled = true;
-                verifyButton.innerHTML = '<span class="loading-spinner"></span>Verifying...';
-                msgElement.className = 'verification-message info';
-                msgElement.textContent = 'Please wait while we verify your follow (this may take up to a minute)...';
-                
-                const response = await fetch('https://human-coin-server.onrender.com/api/verify_follow', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ account: taskType.replace('follow', '').toLowerCase() })
+                    }
                 });
 
-                const data = await response.json();
-                
-                if (response.ok && data.verified) {
-                    await completeTask(taskType);
-                    msgElement.className = 'verification-message success';
-                    msgElement.textContent = 'Verification successful! Points awarded!';
-                    
-                    // Move task to completed section
-                    updateTasksDisplay();
-                } else {
-                    throw new Error(data.message || 'Failed to verify follow. Please make sure you followed the account.');
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '../marketing.html';
+                        return false;
+                    }
+                    throw new Error('Failed to get user data');
                 }
+
+                return true;
             } catch (error) {
-                msgElement.className = 'verification-message error';
-                msgElement.textContent = error.message;
-                verifyButton.disabled = false;
-                verifyButton.textContent = 'Verify Follow';
-            }
-        }
-
-        function openTwitterFollow(taskType) {
-            const handle = TASKS_CONFIG[taskType].twitterHandle.replace('@', '');
-            window.open(`https://twitter.com/intent/follow?screen_name=${handle}`, 
-                'twitter-follow-dialog', 
-                'width=600,height=600');
-        }
-
-        function updateTasksDisplay() {
-            const activeTasks = document.getElementById('activeTasks');
-            const completedTasks = document.getElementById('completedTasks');
-            
-            // Clear existing tasks
-            activeTasks.innerHTML = '';
-            completedTasks.innerHTML = '';
-            
-            // Add tasks to appropriate containers
-            Object.keys(TASKS_CONFIG).forEach(taskType => {
-                const isCompleted = userData.tasks[taskType]?.completed;
-                const taskCard = createTaskCard(taskType, isCompleted);
-                
-                if (isCompleted) {
-                    completedTasks.appendChild(taskCard);
-                } else {
-                    activeTasks.appendChild(taskCard);
-                }
-            });
-        }
-
-        function updateUI() {
-            // Update stats
-            document.getElementById('pointsValue').textContent = userData.points;
-            document.getElementById('levelValue').textContent = userData.level;
-            document.getElementById('tasksValue').textContent = 
-                (userData.tasks.checkin.count || 0) + 
-                (userData.tasks.engage.count || 0) +
-                (userData.tasks.followHuman.completed ? 1 : 0) +
-                (userData.tasks.followEssentials.completed ? 1 : 0);
-
-            // Update exp bar
-            const expNeeded = calculateExpForLevel(userData.level);
-            const expPercentage = (userData.exp / expNeeded) * 100;
-            document.getElementById('expFill').style.width = `${expPercentage}%`;
-            document.getElementById('expText').textContent = 
-                `${userData.exp} / ${expNeeded} XP`;
-
-            // Update task progress
-            if (userData.tasks.checkin.lastCompleted) {
-                const lastCheckin = new Date(userData.tasks.checkin.lastCompleted);
-                const now = new Date();
-                const hoursAgo = (now - lastCheckin) / (1000 * 60 * 60);
-                document.getElementById('checkInProgress').style.width = 
-                    hoursAgo < 24 ? '100%' : '0%';
-                document.getElementById('checkInStatus').textContent = 
-                    hoursAgo < 24 ? 'Completed today!' : 'Not completed today';
-            }
-
-            const today = new Date().toDateString();
-            if (userData.tasks.engage.lastReset === today) {
-                const progress = (userData.tasks.engage.count / POINTS_SYSTEM.engage.maxDaily) * 100;
-                document.getElementById('engagementProgress').style.width = `${progress}%`;
-                document.getElementById('engagementStatus').textContent = 
-                    `${userData.tasks.engage.count}/${POINTS_SYSTEM.engage.maxDaily} engagements today`;
-            }
-
-            // Update Twitter follow tasks
-            if (userData.tasks.followHuman.completed) {
-                document.getElementById('followHumanProgress').style.width = '100%';
-                document.getElementById('followHumanStatus').textContent = 'Completed!';
-            }
-
-            if (userData.tasks.followEssentials.completed) {
-                document.getElementById('followEssentialsProgress').style.width = '100%';
-                document.getElementById('followEssentialsStatus').textContent = 'Completed!';
+                console.error('Auth check failed:', error);
+                window.location.href = '../marketing.html';
+                return false;
             }
         }
 
@@ -562,7 +306,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Not authenticated');
+                    throw new Error('Failed to get user data');
                 }
 
                 const data = await response.json();
@@ -572,28 +316,17 @@
                     points: data.points || 0,
                     level: data.level || 1,
                     exp: data.exp || 0,
-                    tasks: {
-                        checkin: { 
-                            lastCompleted: data.tasks?.checkin?.lastCompleted || null,
-                            count: data.tasks?.checkin?.count || 0
-                        },
-                        engage: { 
-                            count: data.tasks?.engage?.count || 0,
-                            lastReset: data.tasks?.engage?.lastReset || null
-                        },
-                        followHuman: { 
-                            completed: data.tasks?.followHuman?.completed || false
-                        },
-                        followEssentials: { 
-                            completed: data.tasks?.followEssentials?.completed || false
-                        }
+                    tasks: data.tasks || {
+                        checkin: { lastCompleted: null, count: 0 },
+                        engage: { count: 0, lastReset: null },
+                        followHuman: { completed: false },
+                        followEssentials: { completed: false }
                     }
                 };
 
                 // Update UI elements
                 document.getElementById('username').textContent = data.twitter_handle || 'Anonymous';
                 document.getElementById('twitterHandle').textContent = '@' + (data.twitter_handle || 'anonymous');
-                document.getElementById('welcomeName').textContent = data.twitter_handle || 'Human';
                 
                 // Set profile photo
                 const profilePhoto = document.getElementById('profilePhoto');
@@ -602,6 +335,15 @@
                 } else {
                     profilePhoto.src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
                 }
+
+                // Update wallet if connected
+                if (data.phantom_wallet) {
+                    const walletAddress = data.phantom_wallet;
+                    document.getElementById('walletAddress').textContent = 
+                        walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
+                    document.getElementById('connectWalletBtn').textContent = 'Wallet Connected';
+                    document.getElementById('connectWalletBtn').disabled = true;
+                }
                 
                 // Update all UI components
                 updateUI();
@@ -609,13 +351,14 @@
 
             } catch (error) {
                 console.error('Error fetching user data:', error);
-                window.location.href = '../marketing.html';
+                if (!await checkAuth()) {
+                    return;
+                }
             }
         }
 
         async function logout() {
             try {
-                // Call the server's signout endpoint
                 const response = await fetch('https://human-coin-server.onrender.com/api/signout', {
                     method: 'POST',
                     credentials: 'include',
@@ -628,9 +371,8 @@
                     throw new Error('Failed to sign out');
                 }
 
-                // Clear local cookies
-                document.cookie = 'user_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=human-memecoin.github.io';
-                document.cookie = 'user_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.human-memecoin.github.io';
+                // Clear any local data
+                userData = null;
                 
                 // Redirect to marketing page
                 window.location.href = '../marketing.html';
@@ -638,22 +380,6 @@
                 console.error('Error signing out:', error);
                 alert('Failed to sign out. Please try again.');
             }
-        }
-
-        function showLevelUpMessage(level) {
-            const message = document.createElement('div');
-            message.className = 'level-up-message';
-            message.innerHTML = `
-                <div class="level-up-content">
-                    <h2>🎉 Level Up!</h2>
-                    <p>Congratulations! You've reached level ${level}!</p>
-                </div>
-            `;
-            document.body.appendChild(message);
-            
-            setTimeout(() => {
-                message.remove();
-            }, 3000);
         }
 
         // Add Phantom Wallet integration
@@ -793,11 +519,25 @@
         }
 
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchUserData().then(() => {
-                updateTasksDisplay();
-                updateLeaderboard();
-            });
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if we just logged in successfully
+            const urlParams = new URLSearchParams(window.location.search);
+            const loginSuccess = urlParams.get('login') === 'success';
+            
+            // Remove the query parameter
+            if (loginSuccess) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Check authentication first
+            if (!await checkAuth()) {
+                return;
+            }
+
+            // Fetch user data and update UI
+            await fetchUserData();
+            updateTasksDisplay();
+            updateLeaderboard();
 
             // Connect wallet button
             document.getElementById('connectWalletBtn').addEventListener('click', connectPhantomWallet);
