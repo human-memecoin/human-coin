@@ -271,13 +271,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        #dashboard {
-            display: none;
-        }
-        #loginScreen {
-            display: block;
-        }
-
         .error-message {
             color: #ff4444;
             background-color: #ffe6e6;
@@ -302,83 +295,6 @@
 
     <div id="errorMessage" class="error-message"></div>
 
-    <aside class="sidebar">
-        <div class="profile-section">
-            <img id="userAvatar" class="profile-avatar" src="placeholder-avatar.png" alt="Profile Picture">
-            <div class="user-info">
-                <h3 id="userName">Loading...</h3>
-                <p id="userHandle" class="twitter-handle">@loading...</p>
-                <p id="userId">ID: #loading...</p>
-            </div>
-        </div>
-        <nav>
-            <ul class="task-list">
-                <li class="task-item">
-                    <span class="task-checkbox"></span>
-                    <span>Dashboard</span>
-                </li>
-                <li class="task-item">
-                    <span class="task-checkbox"></span>
-                    <span>Tasks</span>
-                </li>
-                <li class="task-item">
-                    <span class="task-checkbox"></span>
-                    <span>Rewards</span>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-
-    <main id="dashboard" class="main-content">
-        <h1>Marketing Dashboard</h1>
-        <div class="dashboard-grid">
-            <div class="card points-card">
-                <h2>Total Points</h2>
-                <div class="points-number">2,500</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="--progress: 75%"></div>
-                </div>
-                <p>75% to next level</p>
-            </div>
-
-            <div class="card">
-                <h2>Active Tasks</h2>
-                <ul class="task-list">
-                    <li class="task-item">
-                        <span class="task-checkbox completed"></span>
-                        <span>Share daily post</span>
-                    </li>
-                    <li class="task-item">
-                        <span class="task-checkbox"></span>
-                        <span>Engage with community</span>
-                    </li>
-                    <li class="task-item">
-                        <span class="task-checkbox"></span>
-                        <span>Create content</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <h2>Achievements</h2>
-                <ul class="task-list">
-                    <li class="task-item">
-                        <i class="fas fa-trophy" style="color: gold; margin-right: 1rem;"></i>
-                        <span>Top Contributor</span>
-                    </li>
-                    <li class="task-item">
-                        <i class="fas fa-star" style="color: var(--primary); margin-right: 1rem;"></i>
-                        <span>Early Adopter</span>
-                    </li>
-                    <li class="task-item">
-                        <i class="fas fa-medal" style="color: var(--accent); margin-right: 1rem;"></i>
-                        <span>Task Master</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </main>
-
     <script>
         // Check login status on page load
         async function checkLoginStatus() {
@@ -392,48 +308,17 @@
                 });
                 
                 if (response.ok) {
-                    const userData = await response.json();
-                    console.log('User data:', userData);
-                    updateUserInterface(userData);
-                    showDashboard();
+                    // User is logged in, redirect to dashboard
+                    window.location.href = 'dashboard.html';
                 } else {
-                    console.log('Not logged in, status:', response.status);
-                    showLoginScreen();
+                    // User is not logged in, show login screen
+                    document.getElementById('loginScreen').style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
-                showLoginScreen();
+                document.getElementById('loginScreen').style.display = 'block';
+                showError('Error connecting to server');
             }
-        }
-
-        function showLoginScreen() {
-            document.getElementById('loginScreen').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
-            clearUserData();
-        }
-
-        function showDashboard() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('errorMessage').style.display = 'none';
-            if (window.location.hash === '#dashboard') {
-                document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function clearUserData() {
-            document.getElementById('userHandle').textContent = '';
-            document.getElementById('userAvatar').src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
-            document.getElementById('userPoints').textContent = '0';
-            document.getElementById('userLevel').textContent = '1';
-            document.getElementById('expProgress').style.width = '0%';
-            document.getElementById('expText').textContent = '0 / 100';
-        }
-
-        function loginWithTwitter() {
-            localStorage.setItem('loginInProgress', 'true');
-            localStorage.setItem('loginStartTime', Date.now().toString());
-            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
         }
 
         function showError(message) {
@@ -447,38 +332,10 @@
             }, 5000);
         }
 
-        function updateUserInterface(userData) {
-            console.log('Updating UI with user data:', userData);
-            
-            // Clear login in progress flag
-            localStorage.removeItem('loginInProgress');
-            localStorage.removeItem('loginStartTime');
-            
-            // Update user info
-            document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
-            
-            // Set avatar with fallback
-            const avatarImg = document.getElementById('userAvatar');
-            avatarImg.onerror = function() {
-                this.src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
-            };
-            avatarImg.src = userData.avatar_url || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
-            
-            // Update stats
-            document.getElementById('userPoints').textContent = userData.points || '0';
-            document.getElementById('userLevel').textContent = userData.level || '1';
-            
-            // Calculate progress percentage
-            const expPerLevel = 100;
-            const progress = ((userData.exp || 0) / expPerLevel) * 100;
-            document.getElementById('expProgress').style.width = progress + '%';
-            document.getElementById('expText').textContent = (userData.exp || 0) + ' / ' + expPerLevel;
-            
-            // Show last login time if available
-            if (userData.last_login) {
-                const lastLogin = new Date(userData.last_login);
-                console.log('Last login:', lastLogin.toLocaleString());
-            }
+        function loginWithTwitter() {
+            localStorage.setItem('loginInProgress', 'true');
+            localStorage.setItem('loginStartTime', Date.now().toString());
+            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
         }
 
         function checkUrlErrors() {
@@ -487,70 +344,15 @@
             if (error) {
                 showError('Error during login: ' + error);
                 // Remove error from URL without reloading
-                window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
         // Check login status when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, checking login status');
-            
-            // Check if we were in the middle of logging in
-            const loginInProgress = localStorage.getItem('loginInProgress');
-            const loginStartTime = localStorage.getItem('loginStartTime');
-            
-            if (loginInProgress === 'true') {
-                // Check if login attempt is too old (more than 5 minutes)
-                const loginAge = Date.now() - parseInt(loginStartTime || '0');
-                if (loginAge > 5 * 60 * 1000) {
-                    // Login attempt expired
-                    localStorage.removeItem('loginInProgress');
-                    localStorage.removeItem('loginStartTime');
-                    showLoginScreen();
-                } else if (window.location.hash === '#dashboard') {
-                    // We've returned from Twitter OAuth
-                    checkLoginStatus();
-                }
-            } else {
-                // Normal page load
-                checkLoginStatus();
-            }
-            
+            checkLoginStatus();
             checkUrlErrors();
-        });
-
-        // Function to update user progress
-        async function updateProgress(points, exp) {
-            try {
-                const response = await fetch('/api/update_progress', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        points: points,
-                        exp: exp,
-                        level: Math.floor(exp / 1000) + 1
-                    })
-                });
-                
-                if (response.ok) {
-                    checkLoginStatus(); // Refresh the UI
-                }
-            } catch (error) {
-                console.error('Error updating progress:', error);
-            }
-        }
-
-        // Example: Update progress when completing a task
-        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('click', async () => {
-                if (!checkbox.classList.contains('completed')) {
-                    checkbox.classList.add('completed');
-                    // Award points and exp for completing a task
-                    await updateProgress(100, 50); // Example: 100 points and 50 exp per task
-                }
-            });
         });
     </script>
 </body>

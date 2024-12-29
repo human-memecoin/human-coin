@@ -136,7 +136,7 @@ def twitter_authorize():
         session['twitter_handle'] = user_info['username']
         
         # Create response with cookies
-        response = make_response(redirect('https://human-memecoin.github.io/human-coin/marketing.html#dashboard'))
+        response = make_response(redirect('https://human-memecoin.github.io/human-coin/dashboard.html'))
         
         # Set cookies for persistent login
         max_age = 7 * 24 * 60 * 60  # 7 days in seconds
