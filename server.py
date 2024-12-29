@@ -14,9 +14,14 @@ CORS(app,
      supports_credentials=True, 
      origins=['https://human-memecoin.github.io'],
      allow_headers=['Content-Type', 'Authorization'],
-     methods=['GET', 'POST', 'OPTIONS'])
+     expose_headers=['Set-Cookie'],
+     methods=['GET', 'POST', 'OPTIONS'],
+     allow_credentials=True)
 
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_DOMAIN'] = 'human-coin-server.onrender.com'
 
 # Twitter OAuth 2.0 Setup
 oauth = OAuth(app)

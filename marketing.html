@@ -277,6 +277,15 @@
         #loginScreen {
             display: block;
         }
+
+        .error-message {
+            color: #ff4444;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -290,6 +299,8 @@
             </button>
         </div>
     </div>
+
+    <div id="errorMessage" class="error-message"></div>
 
     <aside class="sidebar">
         <div class="profile-section">
@@ -373,28 +384,39 @@
         async function checkLoginStatus() {
             try {
                 const response = await fetch('https://human-coin-server.onrender.com/api/user', {
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
                 });
                 
                 if (response.ok) {
                     const userData = await response.json();
-                    console.log('User data:', userData);  // Debug log
+                    console.log('User data:', userData);
                     updateUserInterface(userData);
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
                     
                     if (window.location.hash === '#dashboard') {
                         showDashboard();
                     }
                 } else {
-                    console.log('Not logged in');  // Debug log
+                    console.log('Not logged in, status:', response.status);
                     document.getElementById('loginScreen').style.display = 'block';
                     document.getElementById('dashboard').style.display = 'none';
+                    
+                    if (response.status === 401) {
+                        showError('Please log in to view your dashboard');
+                    } else {
+                        showError('Error checking login status');
+                    }
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
                 document.getElementById('loginScreen').style.display = 'block';
                 document.getElementById('dashboard').style.display = 'none';
+                showError('Error connecting to server');
             }
         }
 
@@ -408,23 +430,44 @@
             document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
         function updateUserInterface(userData) {
-            console.log('Updating UI with user data:', userData);  // Debug log
+            console.log('Updating UI with user data:', userData);
             document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
-            document.getElementById('userAvatar').src = userData.avatar_url;
-            document.getElementById('userPoints').textContent = userData.points;
-            document.getElementById('userLevel').textContent = userData.level;
+            
+            // Set avatar with fallback
+            const avatarImg = document.getElementById('userAvatar');
+            avatarImg.onerror = function() {
+                this.src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
+            };
+            avatarImg.src = userData.avatar_url || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
+            
+            document.getElementById('userPoints').textContent = userData.points || '0';
+            document.getElementById('userLevel').textContent = userData.level || '1';
             
             // Calculate progress percentage
             const expPerLevel = 100;
-            const progress = (userData.exp / expPerLevel) * 100;
+            const progress = ((userData.exp || 0) / expPerLevel) * 100;
             document.getElementById('expProgress').style.width = progress + '%';
-            document.getElementById('expText').textContent = userData.exp + ' / ' + expPerLevel;
+            document.getElementById('expText').textContent = (userData.exp || 0) + ' / ' + expPerLevel;
+        }
+
+        function checkUrlErrors() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                showError('Error during login: ' + error);
+            }
         }
 
         // Check login status when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, checking login status');  // Debug log
+            console.log('Page loaded, checking login status');
             checkLoginStatus();
             checkUrlErrors();
         });
@@ -462,18 +505,6 @@
                 }
             });
         });
-
-        // Check URL parameters for errors
-        function checkUrlErrors() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-            if (error) {
-                const errorMessage = document.createElement('div');
-                errorMessage.className = 'error-message';
-                errorMessage.textContent = 'Error during login: ' + error;
-                document.getElementById('loginScreen').appendChild(errorMessage);
-            }
-        }
     </script>
 </body>
 </html>
