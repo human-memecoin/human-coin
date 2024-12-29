@@ -133,7 +133,10 @@ def get_user():
         
         if not user_id:
             print("No user_id found in session or cookies")  # Debug print
-            return jsonify({'error': 'Not logged in'}), 401
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
         
         # Initialize database connection
         conn = sqlite3.connect('users.db')
@@ -180,22 +183,29 @@ def get_user():
         conn.close()
         
         if user:
-            response = jsonify({
+            response = make_response(jsonify({
                 'id': user[0],
                 'twitter_handle': user[1],
                 'avatar_url': user[2],
                 'points': user[3] or 0,
                 'level': user[4] or 1,
                 'exp': user[5] or 0
-            })
+            }))
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             return response
         
-        return jsonify({'error': 'User not found'}), 404
+        response = make_response(jsonify({'error': 'User not found'}), 404)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
         
     except Exception as e:
         print(f"Error in get_user: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
 @app.route('/api/update_progress', methods=['POST'])
 def update_progress():
