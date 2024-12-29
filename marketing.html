@@ -395,48 +395,56 @@
                     const userData = await response.json();
                     console.log('User data:', userData);
                     updateUserInterface(userData);
-                    document.getElementById('loginScreen').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    document.getElementById('errorMessage').style.display = 'none';
-                    
-                    if (window.location.hash === '#dashboard') {
-                        showDashboard();
-                    }
+                    showDashboard();
                 } else {
                     console.log('Not logged in, status:', response.status);
-                    document.getElementById('loginScreen').style.display = 'block';
-                    document.getElementById('dashboard').style.display = 'none';
-                    
-                    if (response.status === 401) {
-                        showError('Please log in to view your dashboard');
-                    } else {
-                        showError('Error checking login status');
-                    }
+                    showLoginScreen();
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
-                document.getElementById('loginScreen').style.display = 'block';
-                document.getElementById('dashboard').style.display = 'none';
-                showError('Error connecting to server');
+                showLoginScreen();
             }
         }
 
-        function loginWithTwitter() {
-            // Store a flag indicating we're in the login process
-            localStorage.setItem('loginInProgress', 'true');
-            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            clearUserData();
         }
 
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('errorMessage').style.display = 'none';
+            if (window.location.hash === '#dashboard') {
+                document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function clearUserData() {
+            document.getElementById('userHandle').textContent = '';
+            document.getElementById('userAvatar').src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
+            document.getElementById('userPoints').textContent = '0';
+            document.getElementById('userLevel').textContent = '1';
+            document.getElementById('expProgress').style.width = '0%';
+            document.getElementById('expText').textContent = '0 / 100';
+        }
+
+        function loginWithTwitter() {
+            localStorage.setItem('loginInProgress', 'true');
+            localStorage.setItem('loginStartTime', Date.now().toString());
+            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
         }
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
+            
+            // Clear error after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
         }
 
         function updateUserInterface(userData) {
@@ -444,7 +452,9 @@
             
             // Clear login in progress flag
             localStorage.removeItem('loginInProgress');
+            localStorage.removeItem('loginStartTime');
             
+            // Update user info
             document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
             
             // Set avatar with fallback
@@ -454,6 +464,7 @@
             };
             avatarImg.src = userData.avatar_url || 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
             
+            // Update stats
             document.getElementById('userPoints').textContent = userData.points || '0';
             document.getElementById('userLevel').textContent = userData.level || '1';
             
@@ -462,6 +473,12 @@
             const progress = ((userData.exp || 0) / expPerLevel) * 100;
             document.getElementById('expProgress').style.width = progress + '%';
             document.getElementById('expText').textContent = (userData.exp || 0) + ' / ' + expPerLevel;
+            
+            // Show last login time if available
+            if (userData.last_login) {
+                const lastLogin = new Date(userData.last_login);
+                console.log('Last login:', lastLogin.toLocaleString());
+            }
         }
 
         function checkUrlErrors() {
@@ -469,6 +486,8 @@
             const error = urlParams.get('error');
             if (error) {
                 showError('Error during login: ' + error);
+                // Remove error from URL without reloading
+                window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
             }
         }
 
@@ -478,10 +497,21 @@
             
             // Check if we were in the middle of logging in
             const loginInProgress = localStorage.getItem('loginInProgress');
-            if (loginInProgress === 'true' && window.location.hash === '#dashboard') {
-                // We've returned from Twitter OAuth
-                checkLoginStatus();
-            } else if (!loginInProgress) {
+            const loginStartTime = localStorage.getItem('loginStartTime');
+            
+            if (loginInProgress === 'true') {
+                // Check if login attempt is too old (more than 5 minutes)
+                const loginAge = Date.now() - parseInt(loginStartTime || '0');
+                if (loginAge > 5 * 60 * 1000) {
+                    // Login attempt expired
+                    localStorage.removeItem('loginInProgress');
+                    localStorage.removeItem('loginStartTime');
+                    showLoginScreen();
+                } else if (window.location.hash === '#dashboard') {
+                    // We've returned from Twitter OAuth
+                    checkLoginStatus();
+                }
+            } else {
                 // Normal page load
                 checkLoginStatus();
             }
