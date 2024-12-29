@@ -386,7 +386,8 @@
                 const response = await fetch('https://human-coin-server.onrender.com/api/user', {
                     credentials: 'include',
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 });
                 
@@ -421,6 +422,8 @@
         }
 
         function loginWithTwitter() {
+            // Store a flag indicating we're in the login process
+            localStorage.setItem('loginInProgress', 'true');
             window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
         }
 
@@ -438,6 +441,10 @@
 
         function updateUserInterface(userData) {
             console.log('Updating UI with user data:', userData);
+            
+            // Clear login in progress flag
+            localStorage.removeItem('loginInProgress');
+            
             document.getElementById('userHandle').textContent = '@' + userData.twitter_handle;
             
             // Set avatar with fallback
@@ -468,7 +475,17 @@
         // Check login status when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded, checking login status');
-            checkLoginStatus();
+            
+            // Check if we were in the middle of logging in
+            const loginInProgress = localStorage.getItem('loginInProgress');
+            if (loginInProgress === 'true' && window.location.hash === '#dashboard') {
+                // We've returned from Twitter OAuth
+                checkLoginStatus();
+            } else if (!loginInProgress) {
+                // Normal page load
+                checkLoginStatus();
+            }
+            
             checkUrlErrors();
         });
 
