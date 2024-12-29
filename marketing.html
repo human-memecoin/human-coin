@@ -3,300 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketing Dashboard | The Essentials</title>
+    <title>Human Coin | Join the Community</title>
     <script src="https://platform.twitter.com/widgets.js" async defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6C63FF;
             --secondary: #2ECC71;
             --background: #F8F9FA;
-            --card-bg: #FFFFFF;
             --text: #2D3436;
             --accent: #FF6B6B;
-            --border: #E0E0E0;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
             background: var(--background);
-            color: var(--text);
             min-height: 100vh;
-            display: grid;
-            grid-template-columns: 250px 1fr;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-right: 1px solid var(--border);
-            height: 100vh;
-            position: fixed;
-            width: 250px;
-        }
-
-        .profile-section {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .stick-figure {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-            position: relative;
-            animation: bounce 2s infinite;
-        }
-
-        .stick-figure::before {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--primary);
-            border-radius: 50%;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .stick-figure::after {
-            content: '';
-            position: absolute;
-            width: 3px;
-            height: 40px;
-            background: var(--primary);
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .user-info {
-            margin-top: 1rem;
-        }
-
-        .user-info h3 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .twitter-handle {
-            color: #1DA1F2;
-            font-size: 0.9rem;
-        }
-
-        /* Main Content Styles */
-        .main-content {
-            padding: 2rem;
-            margin-left: 250px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform-origin: center;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .points-card {
-            background: linear-gradient(135deg, var(--primary), #8B80FF);
-            color: white;
-        }
-
-        .points-number {
-            font-size: 3rem;
-            font-weight: bold;
-            margin: 1rem 0;
-        }
-
-        .task-list {
-            list-style: none;
-        }
-
-        .task-item {
             display: flex;
+            justify-content: center;
             align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-            animation: slideIn 0.3s ease;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--primary);
-            border-radius: 50%;
-            margin-right: 1rem;
-            cursor: pointer;
             position: relative;
-        }
-
-        .task-checkbox.completed::after {
-            content: '✓';
-            position: absolute;
-            color: var(--primary);
-            font-size: 14px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: var(--border);
-            border-radius: 4px;
-            margin: 1rem 0;
             overflow: hidden;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--secondary);
-            border-radius: 4px;
-            width: 0%;
-            animation: progressFill 1s ease forwards;
-        }
-
-        /* Animations */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes progressFill {
-            to { width: var(--progress); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                margin-bottom: 2rem;
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-        }
-
-        .login-screen {
-            position: fixed;
+        .background-animation {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--background);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            z-index: 0;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .stick-figure {
+            position: absolute;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-screen {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
         }
 
         .login-card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
-            animation: fadeIn 0.5s ease;
+            transform: translateY(50px);
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards;
         }
 
-        .twitter-login-btn {
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .stick-hero {
+            font-size: 48px;
+            margin-bottom: 1.5rem;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        h2 {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .twitter-button {
             background: #1DA1F2;
             color: white;
-            padding: 1rem 2rem;
             border: none;
-            border-radius: 8px;
+            padding: 1rem 2rem;
+            border-radius: 50px;
             font-size: 1.1rem;
             cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin: 1rem auto;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+
+        .twitter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.3);
+        }
+
+        .twitter-button:active {
+            transform: translateY(0);
+        }
+
+        .twitter-icon {
+            font-size: 1.3rem;
+        }
+
+        #errorMessage {
+            background: var(--accent);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature {
+            background: rgba(108, 99, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
             transition: transform 0.3s ease;
         }
 
-        .twitter-login-btn:hover {
-            transform: translateY(-2px);
+        .feature:hover {
+            transform: translateY(-5px);
         }
 
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto;
-            border: 3px solid var(--primary);
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 0.5rem;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
 
-        .error-message {
-            color: #ff4444;
-            background-color: #ffe6e6;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: none;
+            .features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="loginScreen" class="login-screen">
+    <div class="background-animation" id="backgroundAnimation"></div>
+    
+    <div class="login-screen">
         <div class="login-card">
-            <h2>Welcome to Marketing Dashboard</h2>
-            <p>Sign in with Twitter to track your progress</p>
-            <button onclick="loginWithTwitter()" class="twitter-login-btn">
-                <i class="fab fa-twitter"></i>
+            <div class="stick-hero">🧍‍♂️</div>
+            <h2>Welcome to Human Coin</h2>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎮</div>
+                    <div>Play & Earn</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🏆</div>
+                    <div>Level Up</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🤝</div>
+                    <div>Community</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <div>Rewards</div>
+                </div>
+            </div>
+
+            <button onclick="loginWithTwitter()" class="twitter-button">
+                <span class="twitter-icon">🐦</span>
                 Sign in with Twitter
             </button>
+            
+            <div id="errorMessage"></div>
         </div>
     </div>
 
-    <div id="errorMessage" class="error-message"></div>
-
     <script>
-        // Check login status on page load
+        // Create floating stick figures in background
+        function createBackgroundAnimation() {
+            const container = document.getElementById('backgroundAnimation');
+            const figures = ['🧍‍♂️', '🏃‍♂️', '🧍‍♀️', '🏃‍♀️'];
+            const count = 20;
+
+            for (let i = 0; i < count; i++) {
+                const figure = document.createElement('div');
+                figure.className = 'stick-figure';
+                figure.textContent = figures[Math.floor(Math.random() * figures.length)];
+                figure.style.left = `${Math.random() * 100}%`;
+                figure.style.top = `${Math.random() * 100}%`;
+                figure.style.animationDelay = `${Math.random() * 2}s`;
+                container.appendChild(figure);
+            }
+        }
+
         async function checkLoginStatus() {
             try {
                 const response = await fetch('https://human-coin-server.onrender.com/api/user', {
@@ -308,17 +245,23 @@
                 });
                 
                 if (response.ok) {
-                    // User is logged in, redirect to dashboard
                     window.location.href = 'dashboard/index.html';
                 } else {
-                    // User is not logged in, show login screen
-                    document.getElementById('loginScreen').style.display = 'block';
+                    document.querySelector('.login-screen').style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
-                document.getElementById('loginScreen').style.display = 'block';
-                showError('Error connecting to server');
+                document.querySelector('.login-screen').style.display = 'block';
             }
+        }
+
+        function loginWithTwitter() {
+            const button = document.querySelector('.twitter-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+                window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
+            }, 150);
         }
 
         function showError(message) {
@@ -326,16 +269,9 @@
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             
-            // Clear error after 5 seconds
             setTimeout(() => {
                 errorDiv.style.display = 'none';
             }, 5000);
-        }
-
-        function loginWithTwitter() {
-            localStorage.setItem('loginInProgress', 'true');
-            localStorage.setItem('loginStartTime', Date.now().toString());
-            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
         }
 
         function checkUrlErrors() {
@@ -343,17 +279,14 @@
             const error = urlParams.get('error');
             if (error) {
                 showError('Error during login: ' + error);
-                // Remove error from URL without reloading
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
 
-        // Check login status when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded, checking login status');
-            checkLoginStatus();
-            checkUrlErrors();
-        });
+        // Initialize
+        createBackgroundAnimation();
+        checkLoginStatus();
+        checkUrlErrors();
     </script>
 </body>
 </html>
