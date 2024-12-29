@@ -224,13 +224,13 @@
                     updateUserInterface(userData);
                 } else {
                     console.log('Not logged in, redirecting to login page');
-                    window.location.href = 'marketing.html';
+                    window.location.href = '../marketing.html';
                 }
             } catch (error) {
                 console.error('Error checking login status:', error);
                 showError('Error connecting to server');
                 setTimeout(() => {
-                    window.location.href = 'marketing.html';
+                    window.location.href = '../marketing.html';
                 }, 3000);
             }
         }
@@ -317,7 +317,7 @@
             localStorage.removeItem('loginStartTime');
             
             // Redirect to marketing page
-            window.location.href = 'marketing.html';
+            window.location.href = '../marketing.html';
         }
 
         // Check login status when page loads
