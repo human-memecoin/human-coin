@@ -98,40 +98,90 @@ def twitter_authorize():
         print(f"Error during authorization: {str(e)}")
         return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?error=login_failed')
 
-@app.route('/api/user')
+@app.route('/api/user', methods=['GET', 'OPTIONS'])
 def get_user():
-    user_id = session.get('user_id')
-    if not user_id:
-        # Try to get user_id from cookie
-        user_session = request.cookies.get('user_session')
-        if user_session:
-            try:
-                user_id = user_session
-            except:
-                return jsonify({'error': 'Invalid session'}), 401
-    
-    if not user_id:
-        return jsonify({'error': 'Not logged in'}), 401
-    
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
-    
-    c.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-    user = c.fetchone()
-    conn.close()
-    
-    if user:
-        response = jsonify({
-            'id': user[0],
-            'twitter_handle': user[1],
-            'points': user[3] or 0,
-            'level': user[4] or 1,
-            'exp': user[5] or 0
-        })
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'GET')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
-    
-    return jsonify({'error': 'User not found'}), 404
+        
+    try:
+        # Check session first
+        user_id = session.get('user_id')
+        
+        # If no session, check cookies
+        if not user_id:
+            user_session = request.cookies.get('user_session')
+            if user_session:
+                user_id = user_session
+        
+        if not user_id:
+            return jsonify({'error': 'Not logged in'}), 401
+        
+        # Initialize database connection
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Create users table if it doesn't exist
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id TEXT PRIMARY KEY,
+                twitter_handle TEXT,
+                avatar_url TEXT,
+                points INTEGER DEFAULT 0,
+                level INTEGER DEFAULT 1,
+                exp INTEGER DEFAULT 0,
+                created_at TIMESTAMP,
+                last_login TIMESTAMP
+            )
+        ''')
+        
+        # Get user data
+        c.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+        user = c.fetchone()
+        
+        if not user:
+            # Create new user if not exists
+            c.execute('''
+                INSERT INTO users 
+                (id, points, level, exp, created_at, last_login) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (
+                user_id,
+                0,  # initial points
+                1,  # initial level
+                0,  # initial exp
+                datetime.now(),
+                datetime.now()
+            ))
+            conn.commit()
+            
+            # Get the newly created user
+            c.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+            user = c.fetchone()
+        
+        conn.close()
+        
+        if user:
+            response = jsonify({
+                'id': user[0],
+                'twitter_handle': user[1],
+                'avatar_url': user[2],
+                'points': user[3] or 0,
+                'level': user[4] or 1,
+                'exp': user[5] or 0
+            })
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+        
+        return jsonify({'error': 'User not found'}), 404
+        
+    except Exception as e:
+        print(f"Error in get_user: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/update_progress', methods=['POST'])
 def update_progress():
