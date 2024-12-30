@@ -587,394 +587,911 @@
                 padding: 1rem;
             }
         }
+        
+        .tasks-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin: 20px;
+        }
+        
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .task-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .task-card.cooldown {
+            opacity: 0.7;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .task-rewards {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .points, .exp {
+            font-size: 0.9em;
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .task-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .task-platform {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.8em;
+            margin-bottom: 15px;
+        }
+        
+        .task-button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .task-button:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .task-button:disabled {
+            background: linear-gradient(135deg, #666, #555);
+            cursor: not-allowed;
+        }
+        
+        .task-button.completed {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+        
+        .cooldown-timer {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Tasks Section */
+        .tasks-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .task-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .task-card.completed {
+            border-color: var(--accent-green);
+        }
+
+        .task-card.cooldown {
+            opacity: 0.7;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .task-rewards {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .points, .exp {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--gray-900);
+        }
+
+        .task-description {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .task-platform {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .task-button {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .task-button:hover:not(:disabled) {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+
+        .task-button:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        .task-button.completed {
+            background: var(--gradient-success);
+        }
+
+        .cooldown-timer {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        /* Social Connections */
+        .social-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .social-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--glass-bg);
+            color: var(--gray-900);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .social-btn i {
+            font-size: 1.2rem;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .social-btn.discord { background: linear-gradient(135deg, #7289da, #5865F2); color: white; }
+        .social-btn.telegram { background: linear-gradient(135deg, #0088cc, #00A3E1); color: white; }
+        .social-btn.twitter { background: linear-gradient(135deg, #1DA1F2, #0C85D0); color: white; }
+        .social-btn.farcaster { background: linear-gradient(135deg, #8B5CF6, #6D28D9); color: white; }
+
+        /* Referral Program */
+        .referral-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .referral-content {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .referral-code {
+            text-align: center;
+        }
+
+        .code-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .copy-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .referral-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .referral-stats .stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .referral-stats h4 {
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .referral-stats p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* Leaderboard */
+        .leaderboard-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .leaderboard-content {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .leaderboard-content > div {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-content > div:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-content h4 {
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--gray-900);
+            font-weight: 500;
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <aside class="sidebar">
             <div class="profile-section">
-                <img id="profilePhoto" src="" alt="Profile" class="profile-photo">
+                <img src="" alt="Profile" class="profile-photo" id="profilePhoto">
                 <div class="profile-info">
-                    <h2 id="username">Loading...</h2>
-                    <p id="twitterHandle">@loading...</p>
+                    <h2 id="profileName">Loading...</h2>
+                    <p id="profileHandle">@loading...</p>
                 </div>
             </div>
-
-            <div class="social-connections">
-                <button class="social-button" onclick="connectSocial('discord')">
-                    <img src="https://assets.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" width="24" height="24">
-                    Connect Discord
-                </button>
-                <button class="social-button" onclick="connectSocial('telegram')">
-                    <img src="https://telegram.org/img/t_logo.svg" width="24" height="24">
-                    Connect Telegram
-                </button>
-                <button class="social-button" onclick="connectSocial('farcaster')">
-                    <img src="https://farcaster.xyz/favicon.ico" width="24" height="24">
-                    Connect Farcaster
-                </button>
-            </div>
-
-            <div class="wallet-section">
-                <button id="connectWalletBtn">Connect Phantom Wallet</button>
-                <p id="walletAddress"></p>
-            </div>
-
-            <button onclick="logout()" class="task-button" style="margin-top: 1rem; background: var(--error);">
-                Sign Out
-            </button>
-        </aside>
-
-        <main class="main-content">
-            <div class="stats-grid">
+            
+            <div class="stats-section">
                 <div class="stat-card">
                     <h3>Points</h3>
-                    <div class="value" id="pointsValue">0</div>
+                    <p id="pointsDisplay">0</p>
                 </div>
                 <div class="stat-card">
                     <h3>Level</h3>
-                    <div class="value" id="levelValue">1</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Tasks Completed</h3>
-                    <div class="value" id="tasksValue">0</div>
+                    <p id="levelDisplay">1</p>
                 </div>
                 <div class="stat-card">
                     <h3>Experience</h3>
-                    <div class="task-progress">
-                        <div class="task-progress-bar">
-                            <div id="expFill" class="task-progress-fill" style="width: 0%"></div>
+                    <p id="expDisplay">0</p>
+                </div>
+            </div>
+            
+            <div class="wallet-section">
+                <button id="connectWalletBtn" class="connect-wallet-btn">
+                    Connect Wallet
+                </button>
+                <p id="walletStatus" class="wallet-status"></p>
+            </div>
+            
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </aside>
+
+        <main class="main-content">
+            <!-- Tasks Section -->
+            <div class="tasks-container">
+                <h2 class="section-title">Daily Tasks</h2>
+                <div class="tasks-grid" id="tasksGrid">
+                    <!-- Tasks will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <!-- Social Connections -->
+            <div class="social-container">
+                <h2 class="section-title">Social Connections</h2>
+                <div class="social-grid">
+                    <button class="social-btn discord" onclick="connectSocial('discord')">
+                        <i class="fab fa-discord"></i>
+                        Connect Discord
+                    </button>
+                    <button class="social-btn telegram" onclick="connectSocial('telegram')">
+                        <i class="fab fa-telegram"></i>
+                        Join Telegram
+                    </button>
+                    <button class="social-btn twitter" onclick="connectSocial('twitter')">
+                        <i class="fab fa-twitter"></i>
+                        Follow on Twitter
+                    </button>
+                    <div class="social-link">
+                        <img src="assets/farcaster.png" alt="Farcaster">
+                        <a href="https://farcaster.xyz/" target="_blank">Join Farcaster</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Program -->
+            <div class="referral-container">
+                <h2 class="section-title">Referral Program</h2>
+                <div class="referral-content">
+                    <div class="referral-code">
+                        <h3>Your Referral Code</h3>
+                        <div class="code-display" id="referralCode">Loading...</div>
+                        <button onclick="copyReferralCode()" class="copy-btn">Copy Code</button>
+                    </div>
+                    <div class="referral-stats">
+                        <div class="stat">
+                            <h4>Total Referrals</h4>
+                            <p id="referralCount">0</p>
                         </div>
-                        <p id="expText">0 / 100 XP</p>
+                        <div class="stat">
+                            <h4>Points Earned</h4>
+                            <p id="referralPoints">0</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="tasks-section">
-                <div class="tasks-header">
-                    <h2>Active Tasks</h2>
+            <!-- Leaderboard -->
+            <div class="leaderboard-container">
+                <h2 class="section-title">Leaderboard</h2>
+                <div class="leaderboard-content" id="leaderboard">
+                    <!-- Leaderboard entries will be dynamically inserted here -->
                 </div>
-                <div id="activeTasks" class="tasks-list"></div>
-            </div>
-
-            <div class="tasks-section">
-                <div class="tasks-header">
-                    <h2>Completed Tasks</h2>
-                </div>
-                <div id="completedTasks" class="tasks-list"></div>
-            </div>
-
-            <div class="referral-section">
-                <h2>Your Referral Program</h2>
-                <div class="referral-code" id="referralCode">Loading...</div>
-                <p>Share your referral code and earn rewards!</p>
-                <div class="stats-grid" style="margin-top: 1rem;">
-                    <div class="stat-card">
-                        <h3>Total Referrals</h3>
-                        <div class="value" id="referralCount">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Points Earned</h3>
-                        <div class="value" id="referralPoints">0</div>
-                    </div>
-                </div>
-                <div id="recentReferrals"></div>
-            </div>
-
-            <div class="leaderboard-section">
-                <h2>Top Users</h2>
-                <table class="leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>User</th>
-                            <th>Points</th>
-                            <th>Level</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody"></tbody>
-                </table>
             </div>
         </main>
     </div>
 
+    <div id="notification" class="notification"></div>
+
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script>
         let userData = null;
+        let phantomWallet = null;
 
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+
+        // Check authentication
         async function checkAuth() {
             try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/user', {
+                const response = await fetch('http://localhost:5000/api/user', {
                     method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
+                    credentials: 'include'
                 });
-
+                
                 if (!response.ok) {
-                    if (response.status === 401) {
-                        window.location.href = '../marketing.html';
-                        return false;
-                    }
-                    throw new Error('Failed to get user data');
+                    window.location.href = 'https://human-memecoin.github.io/human-coin/marketing.html';
+                    return false;
                 }
-
+                
                 return true;
             } catch (error) {
                 console.error('Auth check failed:', error);
-                window.location.href = '../marketing.html';
+                window.location.href = 'https://human-memecoin.github.io/human-coin/marketing.html';
                 return false;
             }
         }
 
-        async function fetchUserData() {
+        // Load user data
+        async function loadUserData() {
             try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/user', {
+                const response = await fetch('http://localhost:5000/api/user', {
                     method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
+                    credentials: 'include'
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to get user data');
-                }
-
-                const data = await response.json();
                 
-                // Initialize or update userData with server data
-                userData = {
-                    points: data.points || 0,
-                    level: data.level || 1,
-                    exp: data.exp || 0,
-                    tasks: data.tasks || {
-                        checkin: { lastCompleted: null, count: 0 },
-                        engage: { count: 0, lastReset: null },
-                        followHuman: { completed: false },
-                        followEssentials: { completed: false }
-                    }
-                };
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                
+                const data = await response.json();
+                userData = data;
 
-                // Update UI elements
-                document.getElementById('username').textContent = data.twitter_handle || 'Anonymous';
-                document.getElementById('twitterHandle').textContent = '@' + (data.twitter_handle || 'anonymous');
+                // Update profile info
+                document.getElementById('profileName').textContent = data.twitter_handle || 'Anonymous';
+                document.getElementById('profileHandle').textContent = '@' + (data.twitter_handle || 'anonymous');
+                document.getElementById('pointsDisplay').textContent = data.points || 0;
+                document.getElementById('levelDisplay').textContent = data.level || 1;
+                document.getElementById('expDisplay').textContent = data.exp || 0;
                 
                 // Set profile photo
                 const profilePhoto = document.getElementById('profilePhoto');
                 if (data.avatar_url) {
                     profilePhoto.src = data.avatar_url;
                 } else {
-                    profilePhoto.src = 'https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png';
+                    profilePhoto.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + data.id;
                 }
-
-                // Update wallet if connected
+                
+                // Update wallet status
                 if (data.phantom_wallet) {
                     const walletAddress = data.phantom_wallet;
-                    document.getElementById('walletAddress').textContent = 
+                    document.getElementById('walletStatus').textContent = 
                         walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
                     document.getElementById('connectWalletBtn').textContent = 'Wallet Connected';
                     document.getElementById('connectWalletBtn').disabled = true;
                 }
                 
-                // Update all UI components
-                updateUI();
-                updateTasksDisplay();
-
+                // Update referral code
+                if (data.referral_code) {
+                    document.getElementById('referralCode').textContent = data.referral_code;
+                }
+                
+                // Update referral stats
+                document.getElementById('referralCount').textContent = data.referral_count || 0;
+                document.getElementById('referralPoints').textContent = data.referral_points || 0;
+                
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data', 'error');
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                const response = await fetch('http://localhost:5000/api/signout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    window.location.href = 'https://human-memecoin.github.io/human-coin/marketing.html';
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                showNotification('Error during logout', 'error');
+            }
+        }
+
+        // Copy referral code
+        function copyReferralCode() {
+            const code = document.getElementById('referralCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Referral code copied!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy code', 'error');
+            });
+        }
+
+        // Connect social accounts
+        async function connectSocial(platform) {
+            try {
+                const response = await fetch('http://localhost:5000/api/connect/' + platform, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    showNotification('Failed to connect ' + platform, 'error');
+                }
+            } catch (error) {
+                console.error('Error connecting social:', error);
+                showNotification('Error connecting ' + platform, 'error');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if we just logged in successfully
+                const urlParams = new URLSearchParams(window.location.search);
+                const loginSuccess = urlParams.get('login') === 'success';
+                
+                // Remove the query parameter
+                if (loginSuccess) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
+                // Check authentication first
                 if (!await checkAuth()) {
                     return;
                 }
+                
+                // Load all data
+                await Promise.all([
+                    loadUserData(),
+                    loadTasks(),
+                    updateLeaderboard()
+                ]);
+                
+                // Connect wallet button
+                document.getElementById('connectWalletBtn').addEventListener('click', connectPhantomWallet);
+                
+                console.log('Dashboard initialized successfully!');
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showNotification('Error loading dashboard', 'error');
+            }
+        });
+
+        // Task management
+        async function loadTasks() {
+            try {
+                const response = await fetch('http://localhost:5000/api/tasks', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch tasks');
+                }
+                
+                const data = await response.json();
+                const tasksGrid = document.getElementById('tasksGrid');
+                tasksGrid.innerHTML = ''; // Clear existing tasks
+                
+                data.tasks.forEach(task => {
+                    const taskCard = document.createElement('div');
+                    taskCard.className = `task-card ${task.in_cooldown ? 'cooldown' : ''} ${task.completed_at ? 'completed' : ''}`;
+                    
+                    const cooldownTime = task.next_available ? new Date(task.next_available) : null;
+                    const now = new Date();
+                    const timeLeft = cooldownTime ? Math.max(0, (cooldownTime - now) / 1000) : 0;
+                    
+                    taskCard.innerHTML = `
+                        <div class="task-header">
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-rewards">
+                                <span class="points">+${task.points} pts</span>
+                                <span class="exp">+${task.exp} exp</span>
+                            </div>
+                        </div>
+                        <div class="task-description">${task.description}</div>
+                        ${task.platform !== 'all' ? `<div class="task-platform">${task.platform}</div>` : ''}
+                        ${task.in_cooldown ? `
+                            <div class="cooldown-timer" data-cooldown="${timeLeft}">
+                                Next available in: ${formatTimeLeft(timeLeft)}
+                            </div>
+                        ` : ''}
+                        <button class="task-button ${task.completed_at ? 'completed' : ''} ${task.in_cooldown ? 'cooldown' : ''}"
+                                onclick="completeTask('${task.id}')"
+                                ${task.in_cooldown || task.completed_at ? 'disabled' : ''}>
+                            ${task.in_cooldown ? 'In Cooldown' : (task.completed_at ? 'Completed' : 'Complete Task')}
+                        </button>
+                    `;
+                    
+                    tasksGrid.appendChild(taskCard);
+                });
+                
+                // Start cooldown timers
+                startCooldownTimers();
+                
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                showNotification('Error loading tasks', 'error');
             }
         }
 
-        async function logout() {
+        function formatTimeLeft(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m ${secs}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${secs}s`;
+            } else {
+                return `${secs}s`;
+            }
+        }
+
+        function startCooldownTimers() {
+            const timers = document.querySelectorAll('.cooldown-timer');
+            timers.forEach(timer => {
+                let timeLeft = parseInt(timer.dataset.cooldown);
+                
+                const interval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) {
+                        clearInterval(interval);
+                        loadTasks(); // Refresh tasks when cooldown ends
+                    } else {
+                        timer.textContent = `Next available in: ${formatTimeLeft(timeLeft)}`;
+                    }
+                }, 1000);
+            });
+        }
+
+        async function completeTask(taskId) {
             try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/signout', {
+                const response = await fetch('http://localhost:5000/api/tasks/complete', {
                     method: 'POST',
-                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        task_id: taskId
+                    })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to sign out');
-                }
-
-                // Clear any local data
-                userData = null;
                 
-                // Redirect to marketing page
-                window.location.href = '../marketing.html';
+                if (!response.ok) {
+                    throw new Error('Failed to complete task');
+                }
+                
+                const data = await response.json();
+                
+                // Show success notification with points and exp earned
+                showNotification(`Task completed! +${data.points_earned} points, +${data.exp_earned} exp`, 'success');
+                
+                // Refresh tasks and user data
+                await Promise.all([
+                    loadTasks(),
+                    loadUserData()
+                ]);
+                
             } catch (error) {
-                console.error('Error signing out:', error);
-                alert('Failed to sign out. Please try again.');
+                console.error('Error completing task:', error);
+                showNotification('Error completing task', 'error');
             }
         }
 
-        // Add Phantom Wallet integration
-        let phantomWallet = null;
+        // Update leaderboard
+        async function updateLeaderboard() {
+            try {
+                const response = await fetch('http://localhost:5000/api/leaderboard', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch leaderboard');
+                }
+                
+                const data = await response.json();
+                const container = document.getElementById('leaderboard');
+                container.innerHTML = ''; // Clear existing leaderboard
+                
+                data.leaderboard.forEach(entry => {
+                    const row = document.createElement('div');
+                    row.innerHTML = `
+                        <h4>#${entry.rank}</h4>
+                        <p>@${entry.handle}</p>
+                        <p>${entry.points} pts</p>
+                        <p>Level ${entry.level}</p>
+                    `;
+                    container.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating leaderboard:', error);
+                showNotification('Error loading leaderboard', 'error');
+            }
+        }
 
+        // Connect Phantom wallet
         async function connectPhantomWallet() {
             try {
                 if (!window.solana || !window.solana.isPhantom) {
                     window.open('https://phantom.app/', '_blank');
                     return;
                 }
-
+                
                 const provider = window.solana;
                 await provider.connect();
                 phantomWallet = provider;
-
+                
                 const walletAddress = provider.publicKey.toString();
-                document.getElementById('walletAddress').textContent = 
+                document.getElementById('walletStatus').textContent = 
                     walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4);
-
+                
                 // Save wallet address to server
-                await fetch('https://human-coin-server.onrender.com/api/connect_wallet', {
+                const response = await fetch('http://localhost:5000/api/wallet/connect', {
                     method: 'POST',
-                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ wallet_address: walletAddress })
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        wallet_address: walletAddress
+                    })
                 });
-
+                
+                if (!response.ok) {
+                    throw new Error('Failed to save wallet address');
+                }
+                
                 document.getElementById('connectWalletBtn').textContent = 'Wallet Connected';
                 document.getElementById('connectWalletBtn').disabled = true;
-
+                
+                showNotification('Wallet connected successfully!', 'success');
+                
             } catch (error) {
                 console.error('Error connecting wallet:', error);
-                alert('Failed to connect wallet. Please try again.');
+                showNotification('Error connecting wallet', 'error');
             }
         }
-
-        // Add referral system
-        async function useReferralCode() {
-            const code = document.getElementById('referralCode').value;
-            if (!code) {
-                alert('Please enter a referral code');
-                return;
-            }
-
-            try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/referral', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ referral_code: code })
-                });
-
-                const data = await response.json();
-                
-                if (response.ok) {
-                    alert(`Success! You earned ${data.points_earned} points!`);
-                    fetchUserData();  // Refresh user data
-                } else {
-                    alert(data.error || 'Failed to use referral code');
-                }
-            } catch (error) {
-                console.error('Error using referral:', error);
-                alert('Failed to use referral code. Please try again.');
-            }
-        }
-
-        // Add leaderboard
-        async function updateLeaderboard() {
-            try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/leaderboard', {
-                    credentials: 'include'
-                });
-
-                const data = await response.json();
-                const container = document.getElementById('leaderboardBody');
-                container.innerHTML = '';
-
-                data.leaderboard.forEach(entry => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${entry.rank}</td>
-                        <td>@${entry.handle}</td>
-                        <td>${entry.points} pts</td>
-                        <td>Level ${entry.level}</td>
-                    `;
-                    container.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error updating leaderboard:', error);
-            }
-        }
-
-        // Update task verification
-        async function verifyTask(taskType) {
-            const verifyButton = document.getElementById(`${taskType}Verify`);
-            const msgElement = document.getElementById(`${taskType}VerificationMsg`);
-            
-            try {
-                verifyButton.disabled = true;
-                verifyButton.innerHTML = '<span class="loading-spinner"></span>Verifying...';
-                msgElement.className = 'verification-message info';
-                msgElement.textContent = 'Please wait while we verify your task (this will take over a minute)...';
-                
-                const response = await fetch('https://human-coin-server.onrender.com/api/verify_task', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ task_type: taskType })
-                });
-
-                const data = await response.json();
-                
-                if (response.ok && data.verified) {
-                    await completeTask(taskType);
-                    msgElement.className = 'verification-message success';
-                    msgElement.textContent = 'Verification successful! Points awarded!';
-                    updateTasksDisplay();
-                    updateLeaderboard();
-                } else {
-                    throw new Error(data.message || 'Failed to verify task. Please try again.');
-                }
-            } catch (error) {
-                msgElement.className = 'verification-message error';
-                msgElement.textContent = error.message;
-                verifyButton.disabled = false;
-                verifyButton.textContent = 'Verify Task';
-            }
-        }
-
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Check if we just logged in successfully
-            const urlParams = new URLSearchParams(window.location.search);
-            const loginSuccess = urlParams.get('login') === 'success';
-            
-            // Remove the query parameter
-            if (loginSuccess) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-
-            // Check authentication first
-            if (!await checkAuth()) {
-                return;
-            }
-
-            // Fetch user data and update UI
-            await fetchUserData();
-            updateTasksDisplay();
-            updateLeaderboard();
-
-            // Connect wallet button
-            document.getElementById('connectWalletBtn').addEventListener('click', connectPhantomWallet);
-        });
     </script>
 </body>
 </html>
