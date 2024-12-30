@@ -4,266 +4,459 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Coin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6C63FF;
-            --secondary: #27AE60;
-            --background: #F8F9FD;
-            --card: #FFFFFF;
-            --text: #2D3748;
-            --text-secondary: #718096;
-            --error: #E53E3E;
-            --success: #48BB78;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f43f5e;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background: var(--background);
-            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.5;
+        }
+
+        .container {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 280px 1fr;
             min-height: 100vh;
         }
 
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
         .sidebar {
-            background: var(--card);
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            height: fit-content;
-            position: sticky;
-            top: 2rem;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         .main-content {
+            padding: 2rem;
             display: grid;
-            gap: 2rem;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
 
-        .wallet-section {
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .connect-wallet-btn {
-            background: linear-gradient(135deg, #9945FF, #6C63FF);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
+        .profile-section {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: transform 0.3s ease;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gray-100);
+            border-radius: 0.75rem;
         }
 
-        .connect-wallet-btn:hover {
-            transform: translateY(-2px);
+        .profile-photo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .wallet-address {
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            word-break: break-all;
+        .profile-info h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
         }
 
-        .referral-section {
-            margin: 2rem 0;
+        .profile-info p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
             padding: 1.5rem;
-            background: rgba(108, 99, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .referral-input {
+        .stat-card h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .tasks-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .tasks-header {
             display: flex;
-            gap: 0.5rem;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
         }
 
-        .referral-input input {
-            flex: 1;
-            padding: 0.8rem;
-            border: 2px solid rgba(108, 99, 255, 0.2);
-            border-radius: 8px;
-            font-size: 0.9rem;
+        .tasks-list {
+            display: grid;
+            gap: 1rem;
         }
 
-        .referral-btn {
+        .task-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .task-icon {
+            font-size: 1.25rem;
+        }
+
+        .task-title {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .task-progress {
+            margin-top: 0.5rem;
+        }
+
+        .task-progress-bar {
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .task-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .task-button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 500;
+            transition: background-color 0.2s;
         }
 
-        .referral-info {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
+        .task-button:hover {
+            background: var(--primary-dark);
         }
 
-        .leaderboard-container {
-            background: var(--card);
-            border-radius: 15px;
+        .task-button:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        .verification-message {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .verification-message.success {
+            color: var(--success);
+        }
+
+        .verification-message.error {
+            color: var(--error);
+        }
+
+        .verification-message.info {
+            color: var(--primary);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .level-up-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .leaderboard-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .leaderboard-entry {
-            display: grid;
-            grid-template-columns: 50px 1fr auto auto auto;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            transition: background-color 0.3s ease;
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
         }
 
-        .leaderboard-entry:hover {
-            background: rgba(108, 99, 255, 0.05);
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .leaderboard-rank {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .leaderboard-handle {
-            color: var(--text);
-        }
-
-        .leaderboard-points {
-            color: var(--secondary);
+        .leaderboard-table th {
             font-weight: 500;
+            color: var(--gray-500);
         }
 
-        .leaderboard-level {
-            background: rgba(108, 99, 255, 0.1);
-            padding: 0.3rem 0.8rem;
-            border-radius: 12px;
-            font-size: 0.9rem;
+        .referral-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .referral-code {
+            background: var(--gray-100);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            margin: 1rem 0;
+        }
+
+        .social-connections {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .social-button:hover {
+            border-color: var(--primary);
             color: var(--primary);
         }
 
-        @media (max-width: 1200px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
+        .social-button.connected {
+            background: var(--gray-100);
+            cursor: default;
+        }
 
-            .sidebar {
-                position: static;
-            }
+        .wallet-section {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        #connectWalletBtn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #connectWalletBtn:hover {
+            background: var(--primary-dark);
+        }
+
+        #connectWalletBtn:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+
+        #walletAddress {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            word-break: break-all;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="sidebar">
+    <div class="container">
+        <aside class="sidebar">
             <div class="profile-section">
-                <div class="avatar-container">
-                    <img id="profilePhoto" class="profile-photo" src="" alt="Profile Photo">
-                </div>
+                <img id="profilePhoto" src="" alt="Profile" class="profile-photo">
                 <div class="profile-info">
                     <h2 id="username">Loading...</h2>
-                    <p id="twitterHandle" class="twitter-handle">@loading</p>
+                    <p id="twitterHandle">@loading...</p>
                 </div>
+            </div>
+
+            <div class="social-connections">
+                <button class="social-button" onclick="connectSocial('discord')">
+                    <img src="https://assets.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" width="24" height="24">
+                    Connect Discord
+                </button>
+                <button class="social-button" onclick="connectSocial('telegram')">
+                    <img src="https://telegram.org/img/t_logo.svg" width="24" height="24">
+                    Connect Telegram
+                </button>
+                <button class="social-button" onclick="connectSocial('farcaster')">
+                    <img src="https://farcaster.xyz/favicon.ico" width="24" height="24">
+                    Connect Farcaster
+                </button>
             </div>
 
             <div class="wallet-section">
-                <button id="connectWalletBtn" class="connect-wallet-btn">
-                    <span class="wallet-icon">👛</span>
-                    Connect Phantom Wallet
-                </button>
-                <div id="walletAddress" class="wallet-address"></div>
+                <button id="connectWalletBtn">Connect Phantom Wallet</button>
+                <p id="walletAddress"></p>
+            </div>
+
+            <button onclick="logout()" class="task-button" style="margin-top: 1rem; background: var(--error);">
+                Sign Out
+            </button>
+        </aside>
+
+        <main class="main-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Points</h3>
+                    <div class="value" id="pointsValue">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Level</h3>
+                    <div class="value" id="levelValue">1</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Tasks Completed</h3>
+                    <div class="value" id="tasksValue">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Experience</h3>
+                    <div class="task-progress">
+                        <div class="task-progress-bar">
+                            <div id="expFill" class="task-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <p id="expText">0 / 100 XP</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tasks-section">
+                <div class="tasks-header">
+                    <h2>Active Tasks</h2>
+                </div>
+                <div id="activeTasks" class="tasks-list"></div>
+            </div>
+
+            <div class="tasks-section">
+                <div class="tasks-header">
+                    <h2>Completed Tasks</h2>
+                </div>
+                <div id="completedTasks" class="tasks-list"></div>
             </div>
 
             <div class="referral-section">
-                <div class="referral-input">
-                    <input type="text" id="referralCode" placeholder="Enter referral code">
-                    <button onclick="useReferralCode()" class="referral-btn">Apply</button>
+                <h2>Your Referral Program</h2>
+                <div class="referral-code" id="referralCode">Loading...</div>
+                <p>Share your referral code and earn rewards!</p>
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <div class="stat-card">
+                        <h3>Total Referrals</h3>
+                        <div class="value" id="referralCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Points Earned</h3>
+                        <div class="value" id="referralPoints">0</div>
+                    </div>
                 </div>
-                <div class="referral-info">
-                    <p>Get 100 points for using a referral code</p>
-                    <p>Get 200 points when others use your code</p>
-                </div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon">⭐</div>
-                    <div class="stat-value" id="pointsValue">0</div>
-                    <div class="stat-label">Points</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-value" id="levelValue">1</div>
-                    <div class="stat-label">Level</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-value" id="tasksValue">0</div>
-                    <div class="stat-label">Tasks</div>
-                </div>
-            </div>
-
-            <div class="exp-bar-container">
-                <div class="exp-bar">
-                    <div id="expFill" class="exp-fill"></div>
-                </div>
-                <div class="exp-text" id="expText">0 / 100 XP</div>
-            </div>
-
-            <button onclick="logout()" class="logout-btn">
-                <span>🚪</span>
-                Sign Out
-            </button>
-        </div>
-
-        <div class="main-content">
-            <div class="tasks-section">
-                <div class="section-header">
-                    <h2>Active Tasks</h2>
-                </div>
-                <div id="activeTasks" class="tasks-container">
-                    <!-- Active tasks will be dynamically added here -->
-                </div>
-
-                <div class="section-header">
-                    <h2>Completed Tasks</h2>
-                </div>
-                <div id="completedTasks" class="tasks-container completed-tasks">
-                    <!-- Completed tasks will be dynamically added here -->
-                </div>
+                <div id="recentReferrals"></div>
             </div>
 
             <div class="leaderboard-section">
-                <div class="section-header">
-                    <h2>Leaderboard</h2>
-                </div>
-                <div id="leaderboard" class="leaderboard-container">
-                    <!-- Leaderboard entries will be dynamically added here -->
-                </div>
+                <h2>Top Users</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Points</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
             </div>
-        </div>
+        </main>
     </div>
 
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script>
         let userData = null;
 
@@ -459,20 +652,18 @@
                 });
 
                 const data = await response.json();
-                const container = document.getElementById('leaderboard');
+                const container = document.getElementById('leaderboardBody');
                 container.innerHTML = '';
 
                 data.leaderboard.forEach(entry => {
-                    const div = document.createElement('div');
-                    div.className = 'leaderboard-entry';
-                    div.innerHTML = `
-                        <div class="leaderboard-rank">#${entry.rank}</div>
-                        <div class="leaderboard-handle">@${entry.handle}</div>
-                        <div class="leaderboard-points">${entry.points} pts</div>
-                        <div class="leaderboard-level">Level ${entry.level}</div>
-                        ${entry.wallet ? `<div class="leaderboard-wallet">${entry.wallet}</div>` : ''}
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.rank}</td>
+                        <td>@${entry.handle}</td>
+                        <td>${entry.points} pts</td>
+                        <td>Level ${entry.level}</td>
                     `;
-                    container.appendChild(div);
+                    container.appendChild(row);
                 });
             } catch (error) {
                 console.error('Error updating leaderboard:', error);

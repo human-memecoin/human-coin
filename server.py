@@ -588,6 +588,9 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             twitter_handle TEXT,
+            discord_id TEXT,
+            farcaster_id TEXT,
+            telegram_id TEXT,
             avatar_url TEXT,
             points INTEGER DEFAULT 0,
             level INTEGER DEFAULT 1,
@@ -595,13 +598,225 @@ def init_db():
             phantom_wallet TEXT,
             referral_code TEXT UNIQUE,
             referred_by TEXT,
+            referral_count INTEGER DEFAULT 0,
             tasks TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_updated TIMESTAMP
+        )
+    ''')
+    
+    # Create tasks table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS tasks (
+            id TEXT PRIMARY KEY,
+            title TEXT,
+            description TEXT,
+            task_type TEXT,
+            points INTEGER,
+            exp INTEGER,
+            platform TEXT,
+            requirements TEXT,
+            custom_data TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     
+    # Create task completions table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS task_completions (
+            user_id TEXT,
+            task_id TEXT,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            proof TEXT,
+            verified BOOLEAN DEFAULT FALSE,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (task_id) REFERENCES tasks(id),
+            PRIMARY KEY (user_id, task_id)
+        )
+    ''')
+    
+    # Create default tasks
+    default_tasks = [
+        ('daily_checkin', 'Daily Check-in', 'Check in daily to earn points!', 'daily', 10, 20, 'all', '', ''),
+        ('twitter_follow', 'Follow on Twitter', 'Follow Human Coin on Twitter', 'social', 50, 100, 'twitter', '', ''),
+        ('discord_join', 'Join Discord', 'Join our Discord community', 'social', 50, 100, 'discord', '', ''),
+        ('telegram_join', 'Join Telegram', 'Join our Telegram group', 'social', 50, 100, 'telegram', '', ''),
+        ('farcaster_follow', 'Follow on Farcaster', 'Follow us on Farcaster', 'social', 50, 100, 'farcaster', '', '')
+    ]
+    
+    c.executemany('''
+        INSERT OR IGNORE INTO tasks 
+        (id, title, description, task_type, points, exp, platform, requirements, custom_data)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', default_tasks)
+    
     conn.commit()
     conn.close()
+
+@app.route('/api/tasks', methods=['GET'])
+def get_tasks():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Get all tasks
+        c.execute('''
+            SELECT t.*, 
+                   tc.completed_at IS NOT NULL as is_completed,
+                   tc.verified
+            FROM tasks t
+            LEFT JOIN task_completions tc 
+                ON t.id = tc.task_id 
+                AND tc.user_id = ?
+            ORDER BY t.created_at DESC
+        ''', (user_id,))
+        
+        tasks = []
+        for row in c.fetchall():
+            tasks.append({
+                'id': row[0],
+                'title': row[1],
+                'description': row[2],
+                'task_type': row[3],
+                'points': row[4],
+                'exp': row[5],
+                'platform': row[6],
+                'requirements': row[7],
+                'custom_data': row[8],
+                'is_completed': bool(row[9]),
+                'is_verified': bool(row[10])
+            })
+        
+        conn.close()
+        
+        response = make_response(jsonify({'tasks': tasks}))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error getting tasks: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/referral/stats', methods=['GET'])
+def get_referral_stats():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Get user's referral code and count
+        c.execute('''
+            SELECT referral_code, referral_count,
+                   (SELECT COUNT(*) FROM users WHERE referred_by = ?) as total_referrals
+            FROM users 
+            WHERE id = ?
+        ''', (user_id, user_id))
+        
+        result = c.fetchone()
+        if not result:
+            conn.close()
+            response = make_response(jsonify({'error': 'User not found'}), 404)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        referral_code, referral_count, total_referrals = result
+        
+        # Get recent referrals
+        c.execute('''
+            SELECT twitter_handle, created_at 
+            FROM users 
+            WHERE referred_by = ?
+            ORDER BY created_at DESC
+            LIMIT 5
+        ''', (user_id,))
+        
+        recent_referrals = [{
+            'handle': row[0],
+            'date': row[1]
+        } for row in c.fetchall()]
+        
+        conn.close()
+        
+        response = make_response(jsonify({
+            'referral_code': referral_code,
+            'referral_count': referral_count,
+            'total_referrals': total_referrals,
+            'recent_referrals': recent_referrals
+        }))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error getting referral stats: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+@app.route('/api/connect_social', methods=['POST'])
+def connect_social():
+    try:
+        user_id = session.get('user_id')
+        if not user_id:
+            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        data = request.json
+        platform = data.get('platform')
+        platform_id = data.get('platform_id')
+        
+        if not platform or not platform_id:
+            response = make_response(jsonify({'error': 'Platform and ID required'}), 400)
+            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
+
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Update user's social connection
+        c.execute(f'''
+            UPDATE users 
+            SET {platform}_id = ?,
+                last_updated = CURRENT_TIMESTAMP
+            WHERE id = ?
+        ''', (platform_id, user_id))
+        
+        conn.commit()
+        conn.close()
+
+        response = make_response(jsonify({'message': f'{platform} connected successfully'}))
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
+
+    except Exception as e:
+        print(f"Error connecting social: {str(e)}")
+        response = make_response(jsonify({'error': str(e)}), 500)
+        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
 init_db()
 
