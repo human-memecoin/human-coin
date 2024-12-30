@@ -2,34 +2,44 @@ from flask import Flask, session, redirect, request, jsonify, make_response
 from authlib.integrations.flask_client import OAuth
 from flask_cors import CORS
 import os
-from datetime import datetime, timedelta
-import sqlite3
-from dotenv import load_dotenv
 import json
-import time
+import sqlite3
 import random
 import string
 import secrets
+from datetime import datetime, timedelta
+from requests_oauthlib import OAuth1Session
+from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 app.debug = True  # Enable debug mode
-CORS(app, 
-     supports_credentials=True, 
-     origins=['https://human-memecoin.github.io', 'http://localhost:5500', 'http://127.0.0.1:5500'],
-     allow_headers=['Content-Type', 'Authorization', 'Cookie'],
-     expose_headers=['Set-Cookie'],
-     methods=['GET', 'POST', 'OPTIONS'])
+app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
-app.secret_key = os.getenv('FLASK_SECRET_KEY')
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE='None',
-    SESSION_COOKIE_HTTPONLY=True,
-    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
-)
+CORS(app, 
+     resources={r"/api/*": {"origins": ["https://human-memecoin.github.io", "http://localhost:5000"], "supports_credentials": True}},
+     supports_credentials=True)
+
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
+TWITTER_API_KEY = os.getenv('TWITTER_API_KEY')
+TWITTER_API_SECRET = os.getenv('TWITTER_API_SECRET')
+TWITTER_CALLBACK_URL = 'https://human-coin-server.onrender.com/callback'
+
+@app.before_request
+def handle_preflight():
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
 # Twitter OAuth 2.0 Setup
 oauth = OAuth(app)
@@ -56,34 +66,42 @@ def index():
 @app.route('/login/twitter')
 def twitter_login():
     try:
-        # Generate and store state
-        state = secrets.token_urlsafe(32)
-        session['oauth_state'] = state
-        
         # Create OAuth1Session
         twitter = OAuth1Session(
-            client_key=os.getenv('TWITTER_API_KEY'),
-            client_secret=os.getenv('TWITTER_API_SECRET'),
-            callback_uri='https://human-coin-server.onrender.com/callback'
+            client_key=TWITTER_API_KEY,
+            client_secret=TWITTER_API_SECRET,
+            callback_uri=TWITTER_CALLBACK_URL
         )
         
         # Get request token
-        request_token = twitter.fetch_request_token('https://api.twitter.com/oauth/request_token')
+        try:
+            request_token = twitter.fetch_request_token(
+                'https://api.twitter.com/oauth/request_token'
+            )
+        except Exception as e:
+            print(f"Error fetching request token: {str(e)}")
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=token_error')
         
         # Store request token in session
         session['request_token'] = request_token
         
-        # Get authorization url
-        authorization_url = twitter.authorization_url('https://api.twitter.com/oauth/authorize')
+        # Generate state
+        state = secrets.token_urlsafe(32)
+        session['oauth_state'] = state
         
-        # Add state to authorization URL
+        # Get authorization url
+        authorization_url = twitter.authorization_url(
+            'https://api.twitter.com/oauth/authorize'
+        )
+        
+        # Add state parameter
         authorization_url = f"{authorization_url}&state={state}"
         
         return redirect(authorization_url)
         
     except Exception as e:
-        print(f"Error during authorization: {str(e)}")
-        return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?error=login_failed')
+        print(f"Error during Twitter login: {str(e)}")
+        return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=login_failed')
 
 @app.route('/callback')
 def callback():
@@ -96,41 +114,59 @@ def callback():
             print("State verification failed")
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=invalid_state')
         
-        # Get the oauth token from query parameters
+        # Get the oauth token and verifier
         oauth_token = request.args.get('oauth_token')
         oauth_verifier = request.args.get('oauth_verifier')
         
         if not oauth_token or not oauth_verifier:
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=missing_token')
 
-        # Get the request token from the session
+        # Get the request token from session
         request_token = session.get('request_token')
         if not request_token:
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=no_request_token')
 
         # Create OAuth1Session for verifying credentials
         twitter = OAuth1Session(
-            client_key=os.getenv('TWITTER_API_KEY'),
-            client_secret=os.getenv('TWITTER_API_SECRET'),
+            client_key=TWITTER_API_KEY,
+            client_secret=TWITTER_API_SECRET,
             resource_owner_key=oauth_token,
             resource_owner_secret=request_token['oauth_token_secret'],
             verifier=oauth_verifier
         )
 
-        # Get the access token
-        access_tokens = twitter.fetch_access_token('https://api.twitter.com/oauth/access_token')
+        try:
+            # Get the access token
+            access_tokens = twitter.fetch_access_token(
+                'https://api.twitter.com/oauth/access_token'
+            )
+        except Exception as e:
+            print(f"Error fetching access token: {str(e)}")
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=access_token_error')
 
-        # Get user information using the access token
+        # Create new session with access token
         twitter = OAuth1Session(
-            client_key=os.getenv('TWITTER_API_KEY'),
-            client_secret=os.getenv('TWITTER_API_SECRET'),
+            client_key=TWITTER_API_KEY,
+            client_secret=TWITTER_API_SECRET,
             resource_owner_key=access_tokens['oauth_token'],
             resource_owner_secret=access_tokens['oauth_token_secret']
         )
 
-        # Get user profile information
-        response = twitter.get('https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true')
-        user_info = response.json()
+        try:
+            # Get user profile information
+            response = twitter.get(
+                'https://api.twitter.com/1.1/account/verify_credentials.json',
+                params={'include_email': 'true', 'skip_status': 'true'}
+            )
+            
+            if response.status_code != 200:
+                print(f"Error getting user info: {response.text}")
+                return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=profile_error')
+                
+            user_info = response.json()
+        except Exception as e:
+            print(f"Error getting user info: {str(e)}")
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=profile_error')
 
         # Store user information in session
         session['user_id'] = user_info['id_str']
@@ -143,43 +179,49 @@ def callback():
         conn = sqlite3.connect('users.db')
         c = conn.cursor()
         
-        # Check if user exists
-        c.execute('SELECT id FROM users WHERE id = ?', (user_info['id_str'],))
-        existing_user = c.fetchone()
-        
-        if existing_user:
-            # Update existing user
-            c.execute('''
-                UPDATE users 
-                SET twitter_handle = ?, 
-                    avatar_url = ?,
-                    last_login = CURRENT_TIMESTAMP
-                WHERE id = ?
-            ''', (
-                user_info['screen_name'],
-                user_info['profile_image_url_https'].replace('_normal', ''),  # Get higher resolution image
-                user_info['id_str']
-            ))
-        else:
-            # Create new user with default tasks
-            referral_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-            c.execute('''
-                INSERT INTO users 
-                (id, twitter_handle, avatar_url, points, level, exp, referral_code, tasks, last_login) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            ''', (
-                user_info['id_str'],
-                user_info['screen_name'],
-                user_info['profile_image_url_https'].replace('_normal', ''),  # Get higher resolution image
-                0,  # points
-                1,  # level
-                0,  # exp
-                referral_code,
-                '{}'  # empty tasks object
-            ))
-        
-        conn.commit()
-        conn.close()
+        try:
+            # Check if user exists
+            c.execute('SELECT id FROM users WHERE id = ?', (user_info['id_str'],))
+            existing_user = c.fetchone()
+            
+            if existing_user:
+                # Update existing user
+                c.execute('''
+                    UPDATE users 
+                    SET twitter_handle = ?, 
+                        avatar_url = ?,
+                        last_login = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ''', (
+                    user_info['screen_name'],
+                    user_info['profile_image_url_https'].replace('_normal', ''),
+                    user_info['id_str']
+                ))
+            else:
+                # Create new user with default tasks
+                referral_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+                c.execute('''
+                    INSERT INTO users 
+                    (id, twitter_handle, avatar_url, points, level, exp, referral_code, tasks, last_login) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                ''', (
+                    user_info['id_str'],
+                    user_info['screen_name'],
+                    user_info['profile_image_url_https'].replace('_normal', ''),
+                    0,  # points
+                    1,  # level
+                    0,  # exp
+                    referral_code,
+                    '{}'  # empty tasks object
+                ))
+            
+            conn.commit()
+        except Exception as e:
+            print(f"Database error: {str(e)}")
+            conn.rollback()
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=database_error')
+        finally:
+            conn.close()
 
         # Clear oauth state and request token
         session.pop('oauth_state', None)
@@ -189,8 +231,8 @@ def callback():
         return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?login=success')
 
     except Exception as e:
-        print(f"Error during authorization: {str(e)}")
-        return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=login_failed')
+        print(f"Error during callback: {str(e)}")
+        return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=callback_failed')
 
 @app.route('/api/user', methods=['GET'])
 def get_user():
