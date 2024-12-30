@@ -55,77 +55,31 @@ def index():
 
 @app.route('/login/twitter')
 def twitter_login():
-    redirect_uri = 'https://human-coin-server.onrender.com/oauth/callback'
-    return twitter.authorize_redirect(
-        redirect_uri,
-        state=os.urandom(16).hex()
-    )
-
-@app.route('/oauth/callback')
-def twitter_authorize():
     try:
-        token = twitter.authorize_access_token()
-        print("Token received:", token)  # Debug print
+        # Generate and store state
+        state = secrets.token_urlsafe(32)
+        session['oauth_state'] = state
         
-        # Get user profile with fields
-        resp = twitter.get('users/me?user.fields=profile_image_url,username,verified,description', token=token)
-        user_data = resp.json()
-        print("User data:", user_data)  # Debug print
-        
-        if 'data' not in user_data:
-            print("Invalid Twitter response:", user_data)
-            return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?error=invalid_response')
-        
-        user_info = user_data['data']
-        
-        # Set session data
-        session['user_id'] = user_info['id']
-        
-        # Store user data in database
-        conn = sqlite3.connect('users.db')
-        c = conn.cursor()
-        
-        # Update user information
-        c.execute('''
-            INSERT OR REPLACE INTO users 
-            (id, twitter_handle, avatar_url, points, level, exp, phantom_wallet, referral_code, referred_by, tasks, created_at) 
-            VALUES (?, ?, ?, 
-                COALESCE((SELECT points FROM users WHERE id = ?), 0),
-                COALESCE((SELECT level FROM users WHERE id = ?), 1),
-                COALESCE((SELECT exp FROM users WHERE id = ?), 0),
-                '',
-                '',
-                '',
-                '',
-                CURRENT_TIMESTAMP)
-        ''', (
-            user_info['id'],
-            user_info['username'],
-            user_info.get('profile_image_url', ''),
-            user_info['id'],
-            user_info['id'],
-            user_info['id'],
-        ))
-        
-        conn.commit()
-        conn.close()
-        
-        # Create response with cookies
-        response = make_response(redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html'))
-        
-        # Set cookies for persistent login
-        max_age = 7 * 24 * 60 * 60  # 7 days in seconds
-        response.set_cookie(
-            'user_session',
-            str(user_info['id']),
-            secure=True,
-            httponly=True,
-            samesite='None',
-            max_age=max_age,
-            domain='onrender.com'
+        # Create OAuth1Session
+        twitter = OAuth1Session(
+            client_key=os.getenv('TWITTER_API_KEY'),
+            client_secret=os.getenv('TWITTER_API_SECRET'),
+            callback_uri='https://human-coin-server.onrender.com/callback'
         )
         
-        return response
+        # Get request token
+        request_token = twitter.fetch_request_token('https://api.twitter.com/oauth/request_token')
+        
+        # Store request token in session
+        session['request_token'] = request_token
+        
+        # Get authorization url
+        authorization_url = twitter.authorization_url('https://api.twitter.com/oauth/authorize')
+        
+        # Add state to authorization URL
+        authorization_url = f"{authorization_url}&state={state}"
+        
+        return redirect(authorization_url)
         
     except Exception as e:
         print(f"Error during authorization: {str(e)}")
@@ -134,6 +88,14 @@ def twitter_authorize():
 @app.route('/callback')
 def callback():
     try:
+        # Verify state
+        state = request.args.get('state')
+        stored_state = session.get('oauth_state')
+        
+        if not state or not stored_state or state != stored_state:
+            print("State verification failed")
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=invalid_state')
+        
         # Get the oauth token from query parameters
         oauth_token = request.args.get('oauth_token')
         oauth_verifier = request.args.get('oauth_verifier')
@@ -172,6 +134,7 @@ def callback():
 
         # Store user information in session
         session['user_id'] = user_info['id_str']
+        session['twitter_handle'] = user_info['screen_name']
         session['access_token'] = access_tokens['oauth_token']
         session['access_token_secret'] = access_tokens['oauth_token_secret']
         session.permanent = True
@@ -189,32 +152,38 @@ def callback():
             c.execute('''
                 UPDATE users 
                 SET twitter_handle = ?, 
-                    avatar_url = ?
+                    avatar_url = ?,
+                    last_login = CURRENT_TIMESTAMP
                 WHERE id = ?
             ''', (
                 user_info['screen_name'],
-                user_info['profile_image_url_https'],
+                user_info['profile_image_url_https'].replace('_normal', ''),  # Get higher resolution image
                 user_info['id_str']
             ))
         else:
             # Create new user with default tasks
+            referral_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
             c.execute('''
                 INSERT INTO users 
-                (id, twitter_handle, avatar_url, points, level, exp, referral_code, tasks) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (id, twitter_handle, avatar_url, points, level, exp, referral_code, tasks, last_login) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ''', (
                 user_info['id_str'],
                 user_info['screen_name'],
-                user_info['profile_image_url_https'],
+                user_info['profile_image_url_https'].replace('_normal', ''),  # Get higher resolution image
                 0,  # points
                 1,  # level
                 0,  # exp
-                ''.join(random.choices(string.ascii_uppercase + string.digits, k=8)),  # random referral code
+                referral_code,
                 '{}'  # empty tasks object
             ))
         
         conn.commit()
         conn.close()
+
+        # Clear oauth state and request token
+        session.pop('oauth_state', None)
+        session.pop('request_token', None)
 
         # Redirect to dashboard
         return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?login=success')
@@ -226,28 +195,44 @@ def callback():
 @app.route('/api/user', methods=['GET'])
 def get_user():
     try:
-        if 'user_id' not in session:
-            response = make_response(jsonify({'error': 'Not logged in'}), 401)
+        # Check if user is logged in
+        user_id = session.get('user_id')
+        if not user_id:
+            response = make_response('Unauthorized', 401)
             response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             return response
-
-        user_id = session['user_id']
         
         conn = sqlite3.connect('users.db')
         c = conn.cursor()
-        c.execute('SELECT twitter_handle, avatar_url, points, level, exp, phantom_wallet, referral_code, tasks FROM users WHERE id = ?', (user_id,))
+        
+        # Get user data
+        c.execute('''
+            SELECT 
+                twitter_handle, 
+                avatar_url, 
+                points, 
+                level, 
+                exp, 
+                phantom_wallet, 
+                referral_code,
+                tasks,
+                last_login
+            FROM users 
+            WHERE id = ?
+        ''', (user_id,))
+        
         user = c.fetchone()
         conn.close()
         
         if not user:
-            session.clear()
-            response = make_response(jsonify({'error': 'User not found'}), 404)
+            response = make_response('User not found', 404)
             response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
             return response
-            
+        
         response = make_response(jsonify({
+            'id': user_id,
             'twitter_handle': user[0],
             'avatar_url': user[1],
             'points': user[2] or 0,
@@ -255,7 +240,8 @@ def get_user():
             'exp': user[4] or 0,
             'phantom_wallet': user[5],
             'referral_code': user[6],
-            'tasks': user[7]
+            'tasks': user[7],
+            'last_login': user[8]
         }))
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -263,7 +249,7 @@ def get_user():
         
     except Exception as e:
         print(f"Error getting user: {str(e)}")
-        response = make_response(jsonify({'error': str(e)}), 500)
+        response = make_response('Internal server error', 500)
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
@@ -583,69 +569,6 @@ def verify_task():
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
 
-def init_db():
-    try:
-        conn = sqlite3.connect('users.db')
-        c = conn.cursor()
-        
-        # Create users table with all necessary columns
-        c.execute('''CREATE TABLE IF NOT EXISTS users (
-            id TEXT PRIMARY KEY,
-            twitter_handle TEXT,
-            avatar_url TEXT,
-            points INTEGER DEFAULT 0,
-            level INTEGER DEFAULT 1,
-            exp INTEGER DEFAULT 0,
-            phantom_wallet TEXT,
-            referral_code TEXT UNIQUE,
-            referral_count INTEGER DEFAULT 0,
-            referral_points INTEGER DEFAULT 0,
-            tasks TEXT DEFAULT '{}'
-        )''')
-        
-        # Create tasks table
-        c.execute('''CREATE TABLE IF NOT EXISTS tasks (
-            id TEXT PRIMARY KEY,
-            title TEXT NOT NULL,
-            description TEXT,
-            points INTEGER DEFAULT 0,
-            exp INTEGER DEFAULT 0,
-            cooldown_hours INTEGER DEFAULT 0,
-            platform TEXT DEFAULT 'all'
-        )''')
-        
-        # Create task_completions table
-        c.execute('''CREATE TABLE IF NOT EXISTS task_completions (
-            user_id TEXT,
-            task_id TEXT,
-            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users (id),
-            FOREIGN KEY (task_id) REFERENCES tasks (id),
-            PRIMARY KEY (user_id, task_id)
-        )''')
-        
-        # Insert default tasks if they don't exist
-        default_tasks = [
-            ('daily_checkin', 'Daily Check-in', 'Check in daily to earn points', 100, 50, 24, 'all'),
-            ('follow_human', 'Follow @TheHumanCoin', 'Follow @TheHumanCoin on Twitter', 200, 100, 0, 'twitter'),
-            ('follow_essentials', 'Follow @essentials_xyz', 'Follow @essentials_xyz on Twitter', 200, 100, 0, 'twitter'),
-            ('join_telegram', 'Join Telegram', 'Join our Telegram channel', 300, 150, 0, 'telegram')
-        ]
-        
-        c.executemany('''INSERT OR IGNORE INTO tasks 
-            (id, title, description, points, exp, cooldown_hours, platform) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)''', default_tasks)
-        
-        conn.commit()
-        print("Database initialized successfully!")
-    except Exception as e:
-        print(f"Error initializing database: {str(e)}")
-    finally:
-        conn.close()
-
-# Initialize database before running the app
-init_db()
-
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     try:
@@ -911,6 +834,69 @@ def connect_social():
         response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
+
+def init_db():
+    try:
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        
+        # Create users table with all necessary columns
+        c.execute('''CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            twitter_handle TEXT,
+            avatar_url TEXT,
+            points INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            exp INTEGER DEFAULT 0,
+            phantom_wallet TEXT,
+            referral_code TEXT UNIQUE,
+            referral_count INTEGER DEFAULT 0,
+            referral_points INTEGER DEFAULT 0,
+            tasks TEXT DEFAULT '{}'
+        )''')
+        
+        # Create tasks table
+        c.execute('''CREATE TABLE IF NOT EXISTS tasks (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            description TEXT,
+            points INTEGER DEFAULT 0,
+            exp INTEGER DEFAULT 0,
+            cooldown_hours INTEGER DEFAULT 0,
+            platform TEXT DEFAULT 'all'
+        )''')
+        
+        # Create task_completions table
+        c.execute('''CREATE TABLE IF NOT EXISTS task_completions (
+            user_id TEXT,
+            task_id TEXT,
+            completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (task_id) REFERENCES tasks (id),
+            PRIMARY KEY (user_id, task_id)
+        )''')
+        
+        # Insert default tasks if they don't exist
+        default_tasks = [
+            ('daily_checkin', 'Daily Check-in', 'Check in daily to earn points', 100, 50, 24, 'all'),
+            ('follow_human', 'Follow @TheHumanCoin', 'Follow @TheHumanCoin on Twitter', 200, 100, 0, 'twitter'),
+            ('follow_essentials', 'Follow @essentials_xyz', 'Follow @essentials_xyz on Twitter', 200, 100, 0, 'twitter'),
+            ('join_telegram', 'Join Telegram', 'Join our Telegram channel', 300, 150, 0, 'telegram')
+        ]
+        
+        c.executemany('''INSERT OR IGNORE INTO tasks 
+            (id, title, description, points, exp, cooldown_hours, platform) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)''', default_tasks)
+        
+        conn.commit()
+        print("Database initialized successfully!")
+    except Exception as e:
+        print(f"Error initializing database: {str(e)}")
+    finally:
+        conn.close()
+
+# Initialize database before running the app
+init_db()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
