@@ -1,0 +1,14 @@
+{
+  "name": "human-coin-token",
+  "version": "1.0.0",
+  "description": "Human Coin (HUMAN) token contract for Solana",
+  "main": "create_token.js",
+  "scripts": {
+    "create": "node create_token.js"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.3.8",
+    "@solana/web3.js": "^1.87.6",
+    "dotenv": "^16.3.1"
+  }
+}
