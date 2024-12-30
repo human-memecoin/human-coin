@@ -28,6 +28,9 @@ async function createToken() {
     const decimals = 9;
 
     try {
+        // Load metadata URLs
+        const { metadata: metadataUrl } = require('./urls.json');
+
         // Create token mint
         const mint = await Token.createMint(
             connection,
@@ -44,7 +47,6 @@ async function createToken() {
         // Create metadata
         const name = "HUMAN";
         const symbol = "HUMAN";
-        const uri = ""; // Add your metadata URI here if you have one
 
         const metadataAccount = await Metadata.create({
             connection,
@@ -52,7 +54,7 @@ async function createToken() {
             mintAuthority: payer,
             name,
             symbol,
-            uri,
+            uri: metadataUrl,
             sellerFeeBasisPoints: 0,
             creators: null,
             updateAuthority: payer.publicKey,
@@ -81,15 +83,17 @@ async function createToken() {
 
         console.log(`Minted ${initialSupply} tokens to:`, tokenAccount.address.toString());
 
-        // Optional: Disable future minting
-        // await mint.setAuthority(
-        //     mint.publicKey,
-        //     null,
-        //     'MintTokens',
-        //     mintAuthority.publicKey,
-        //     []
-        // );
-        // console.log('Minting disabled');
+        // Save token info
+        const fs = require('fs');
+        fs.writeFileSync('./token_info.json', JSON.stringify({
+            tokenAddress: mint.publicKey.toString(),
+            tokenAccount: tokenAccount.address.toString(),
+            metadataAccount: metadataAccount.toString(),
+            supply: initialSupply,
+            decimals
+        }, null, 2));
+
+        console.log('Token info saved to token_info.json');
 
     } catch (error) {
         console.error('Error creating token:', error);

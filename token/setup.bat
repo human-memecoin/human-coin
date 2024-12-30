@@ -1,0 +1,16 @@
+@echo off
+echo Setting up Human Coin Token...
+
+echo Installing Node.js dependencies...
+call npm install
+
+echo Uploading logo to IPFS...
+call npm run upload-logo
+
+echo Creating token...
+call npm run create
+
+echo Setting up multisig...
+node setup_multisig.js
+
+echo Done! Check token_info.json for token details.

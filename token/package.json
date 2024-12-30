@@ -4,12 +4,14 @@
   "description": "Human Coin (HUMAN) token contract for Solana",
   "main": "create_token.js",
   "scripts": {
-    "create": "node create_token.js"
+    "create": "node create_token.js",
+    "upload-logo": "node upload_logo.js"
   },
   "dependencies": {
     "@metaplex-foundation/mpl-token-metadata": "^2.13.0",
     "@solana/spl-token": "^0.3.8",
     "@solana/web3.js": "^1.87.6",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "ipfs-http-client": "^60.0.1"
   }
 }

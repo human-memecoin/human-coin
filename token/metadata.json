@@ -1,0 +1,25 @@
+{
+    "name": "HUMAN",
+    "symbol": "HUMAN",
+    "description": "Human Coin - The Future of Social Currency",
+    "image": "YOUR_LOGO_URL_HERE",
+    "external_url": "https://human-memecoin.github.io/human-coin/",
+    "attributes": [
+        {
+            "trait_type": "Category",
+            "value": "Social Token"
+        },
+        {
+            "trait_type": "Total Supply",
+            "value": "8.2B"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "YOUR_LOGO_URL_HERE",
+                "type": "image/png"
+            }
+        ]
+    }
+}
