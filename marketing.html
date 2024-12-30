@@ -3,10 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Coin | Join the Community</title>
+    <title>Human Coin - The Future of Social Currency</title>
     <script src="https://platform.twitter.com/widgets.js" async defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Poppins';
+            src: url('fonts/Poppins-Regular.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'Poppins';
+            src: url('fonts/Poppins-Bold.woff2') format('woff2');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
         :root {
             --primary: #6C63FF;
             --secondary: #2ECC71;
@@ -207,7 +220,7 @@
                 </div>
             </div>
 
-            <button onclick="loginWithTwitter()" class="twitter-button">
+            <button onclick="login()" class="twitter-button">
                 <span class="twitter-icon">🐦</span>
                 Sign in with Twitter
             </button>
@@ -217,6 +230,45 @@
     </div>
 
     <script>
+        const API_BASE_URL = 'http://localhost:5000';  // Local development
+        // const API_BASE_URL = 'https://human-coin-server.onrender.com';  // Production
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/user`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    window.location.href = 'dashboard/index.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        async function login() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/twitter`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                } else {
+                    throw new Error('Failed to initiate login');
+                }
+            } catch (error) {
+                console.error('Login failed:', error);
+                alert('Failed to login. Please try again.');
+            }
+        }
+
         // Create floating stick figures in background
         function createBackgroundAnimation() {
             const container = document.getElementById('backgroundAnimation');
@@ -232,41 +284,6 @@
                 figure.style.animationDelay = `${Math.random() * 2}s`;
                 container.appendChild(figure);
             }
-        }
-
-        async function checkLoginStatus() {
-            try {
-                const response = await fetch('https://human-coin-server.onrender.com/api/user', {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.twitter_handle) {
-                    console.log('Already logged in as:', data.twitter_handle);
-                    window.location.href = 'dashboard/index.html';
-                } else {
-                    console.log('Not logged in, showing login screen');
-                    document.querySelector('.login-screen').style.display = 'block';
-                }
-            } catch (error) {
-                console.error('Error checking login status:', error);
-                document.querySelector('.login-screen').style.display = 'block';
-            }
-        }
-
-        function loginWithTwitter() {
-            const button = document.querySelector('.twitter-button');
-            button.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                button.style.transform = 'scale(1)';
-                window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
-            }, 150);
         }
 
         function showError(message) {
@@ -290,7 +307,7 @@
 
         // Initialize
         createBackgroundAnimation();
-        checkLoginStatus();
+        checkAuth();
         checkUrlErrors();
     </script>
 </body>
