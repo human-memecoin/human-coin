@@ -15,18 +15,28 @@ load_dotenv()
 
 # Configure Flask app
 app = Flask(__name__)
+app.debug = True
 app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
 # Configure CORS
 CORS(app, 
-     resources={r"/api/*": {"origins": ["https://human-memecoin.github.io", "http://localhost:5000"], "supports_credentials": True}},
-     supports_credentials=True)
+     resources={
+         r"/*": {
+             "origins": ["https://human-memecoin.github.io", "http://localhost:5000"],
+             "supports_credentials": True,
+             "allow_headers": ["Content-Type", "Authorization"],
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+         }
+     })
 
 # Configure session
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'None'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_DOMAIN='onrender.com',
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
+)
 
 # Twitter OAuth config
 TWITTER_API_KEY = os.getenv('TWITTER_API_KEY')
@@ -43,6 +53,17 @@ def handle_preflight():
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
+
+@app.after_request
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin in ['https://human-memecoin.github.io', 'http://localhost:5000']:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Vary', 'Origin')
+    return response
 
 @app.route('/')
 def index():
@@ -218,17 +239,19 @@ def callback():
         print(f"Error during callback: {str(e)}")
         return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=callback_failed')
 
-@app.route('/api/user', methods=['GET'])
+@app.route('/api/user', methods=['GET', 'OPTIONS'])
 def get_user():
+    if request.method == 'OPTIONS':
+        return '', 200
+        
     try:
         # Check if user is logged in
         user_id = session.get('user_id')
         if not user_id:
-            response = make_response('Unauthorized', 401)
-            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response
-        
+            print("No user_id in session")
+            print("Session data:", dict(session))
+            return make_response('Unauthorized', 401)
+
         conn = sqlite3.connect('users.db')
         c = conn.cursor()
         
@@ -252,10 +275,8 @@ def get_user():
         conn.close()
         
         if not user:
-            response = make_response('User not found', 404)
-            response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response
+            print(f"No user found for id: {user_id}")
+            return make_response('User not found', 404)
         
         response = make_response(jsonify({
             'id': user_id,
@@ -269,16 +290,12 @@ def get_user():
             'tasks': user[7],
             'last_login': user[8]
         }))
-        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        
         return response
         
     except Exception as e:
         print(f"Error getting user: {str(e)}")
-        response = make_response('Internal server error', 500)
-        response.headers.add('Access-Control-Allow-Origin', 'https://human-memecoin.github.io')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        return response
+        return make_response('Internal server error', 500)
 
 @app.route('/api/signout', methods=['POST'])
 def signout():

@@ -293,6 +293,35 @@
             checkAuth();
             checkUrlErrors();
         });
+
+        // Check if user is already logged in
+        fetch('https://human-coin-server.onrender.com/api/user', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Not logged in');
+        })
+        .then(user => {
+            // User is logged in, redirect to dashboard
+            window.location.href = 'https://human-memecoin.github.io/human-coin/dashboard/index.html';
+        })
+        .catch(error => {
+            console.log('Not logged in:', error);
+            // User is not logged in, that's fine for the marketing page
+        });
+
+        // Handle Twitter login
+        document.getElementById('twitter-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'https://human-coin-server.onrender.com/login/twitter';
+        });
     </script>
 </body>
 </html>
