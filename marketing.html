@@ -5,21 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Human Coin - The Future of Social Currency</title>
     <script src="https://platform.twitter.com/widgets.js" async defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'Poppins';
-            src: url('fonts/Poppins-Regular.woff2') format('woff2');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'Poppins';
-            src: url('fonts/Poppins-Bold.woff2') format('woff2');
-            font-weight: bold;
-            font-style: normal;
-            font-display: swap;
-        }
         :root {
             --primary: #6C63FF;
             --secondary: #2ECC71;
@@ -230,14 +219,18 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:5000';  // Local development
-        // const API_BASE_URL = 'https://human-coin-server.onrender.com';  // Production
+        // Use the production API endpoint
+        const API_BASE_URL = 'https://human-coin-server.onrender.com';
 
         async function checkAuth() {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/user`, {
                     method: 'GET',
-                    credentials: 'include'
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
                 });
                 
                 if (response.ok) {
@@ -250,22 +243,11 @@
 
         async function login() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/twitter`, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.redirect_url) {
-                        window.location.href = data.redirect_url;
-                    }
-                } else {
-                    throw new Error('Failed to initiate login');
-                }
+                // Redirect directly to Twitter OAuth
+                window.location.href = `${API_BASE_URL}/login/twitter`;
             } catch (error) {
                 console.error('Login failed:', error);
-                alert('Failed to login. Please try again.');
+                showError('Failed to login. Please try again.');
             }
         }
 
@@ -306,9 +288,11 @@
         }
 
         // Initialize
-        createBackgroundAnimation();
-        checkAuth();
-        checkUrlErrors();
+        document.addEventListener('DOMContentLoaded', () => {
+            createBackgroundAnimation();
+            checkAuth();
+            checkUrlErrors();
+        });
     </script>
 </body>
 </html>
