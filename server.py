@@ -1,6 +1,3 @@
-from flask import Flask, session, redirect, request, jsonify, make_response
-from authlib.integrations.flask_client import OAuth
-from flask_cors import CORS
 import os
 import json
 import sqlite3
@@ -8,29 +5,35 @@ import random
 import string
 import secrets
 from datetime import datetime, timedelta
+from flask import Flask, request, jsonify, session, make_response, redirect
+from flask_cors import CORS
 from requests_oauthlib import OAuth1Session
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
+# Configure Flask app
 app = Flask(__name__)
-app.debug = True  # Enable debug mode
 app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
+# Configure CORS
 CORS(app, 
      resources={r"/api/*": {"origins": ["https://human-memecoin.github.io", "http://localhost:5000"], "supports_credentials": True}},
      supports_credentials=True)
 
+# Configure session
 app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
+# Twitter OAuth config
 TWITTER_API_KEY = os.getenv('TWITTER_API_KEY')
 TWITTER_API_SECRET = os.getenv('TWITTER_API_SECRET')
 TWITTER_CALLBACK_URL = 'https://human-coin-server.onrender.com/callback'
 
+# Before request handler to check origin
 @app.before_request
 def handle_preflight():
     if request.method == 'OPTIONS':
@@ -40,24 +43,6 @@ def handle_preflight():
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
-
-# Twitter OAuth 2.0 Setup
-oauth = OAuth(app)
-twitter = oauth.register(
-    name='twitter',
-    client_id=os.getenv('TWITTER_CLIENT_ID'),
-    client_secret=os.getenv('TWITTER_CLIENT_SECRET'),
-    api_base_url='https://api.twitter.com/2/',
-    access_token_url='https://api.twitter.com/2/oauth2/token',
-    authorize_url='https://twitter.com/i/oauth2/authorize',
-    client_kwargs={
-        'scope': 'users.read tweet.read tweet.write offline.access',
-        'response_type': 'code',
-        'token_endpoint_auth_method': 'client_secret_basic',
-        'code_challenge_method': 'S256',
-        'include_email': 'true'
-    }
-)
 
 @app.route('/')
 def index():
@@ -894,7 +879,8 @@ def init_db():
             referral_code TEXT UNIQUE,
             referral_count INTEGER DEFAULT 0,
             referral_points INTEGER DEFAULT 0,
-            tasks TEXT DEFAULT '{}'
+            tasks TEXT DEFAULT '{}',
+            last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )''')
         
         # Create tasks table
