@@ -6,7 +6,7 @@ This directory contains the Human Coin (HUMAN) token contract for Solana blockch
 - Name: Human Coin
 - Symbol: HUMAN
 - Decimals: 9 (standard for Solana)
-- Initial Supply: 1,000,000,000 (1 billion)
+- Initial Supply: 8,200,000,000 (8.2 billion)
 - Network: Solana
 
 ## Development Setup

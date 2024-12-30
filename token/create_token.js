@@ -10,6 +10,7 @@ const {
     TOKEN_PROGRAM_ID,
     ASSOCIATED_TOKEN_PROGRAM_ID,
 } = require('@solana/spl-token');
+const { Metadata } = require('@metaplex-foundation/mpl-token-metadata');
 require('dotenv').config();
 
 async function createToken() {
@@ -40,6 +41,26 @@ async function createToken() {
         console.log('Token created successfully!');
         console.log('Token address:', mint.publicKey.toString());
 
+        // Create metadata
+        const name = "HUMAN";
+        const symbol = "HUMAN";
+        const uri = ""; // Add your metadata URI here if you have one
+
+        const metadataAccount = await Metadata.create({
+            connection,
+            mint: mint.publicKey,
+            mintAuthority: payer,
+            name,
+            symbol,
+            uri,
+            sellerFeeBasisPoints: 0,
+            creators: null,
+            updateAuthority: payer.publicKey,
+            isMutable: true,
+        });
+
+        console.log('Metadata created:', metadataAccount.toString());
+
         // Create associated token account
         const tokenAccount = await mint.getOrCreateAssociatedAccountInfo(
             payer.publicKey
@@ -47,8 +68,8 @@ async function createToken() {
 
         console.log('Token account created:', tokenAccount.address.toString());
 
-        // Mint initial supply (1 billion tokens)
-        const initialSupply = 1_000_000_000;
+        // Mint initial supply (8.2 billion tokens)
+        const initialSupply = 8_200_000_000;
         const supply = initialSupply * Math.pow(10, decimals);
         
         await mint.mintTo(
