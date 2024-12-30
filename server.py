@@ -51,38 +51,38 @@ def index():
 @app.route('/login/twitter')
 def twitter_login():
     try:
-        # Create OAuth1Session
-        twitter = OAuth1Session(
+        # Create OAuth1Session with callback
+        oauth = OAuth1Session(
             client_key=TWITTER_API_KEY,
             client_secret=TWITTER_API_SECRET,
             callback_uri=TWITTER_CALLBACK_URL
         )
         
-        # Get request token
+        # Get request token from Twitter
         try:
-            request_token = twitter.fetch_request_token(
-                'https://api.twitter.com/oauth/request_token'
+            fetch_response = oauth.fetch_request_token(
+                'https://api.twitter.com/oauth/request_token',
+                params={'oauth_callback': TWITTER_CALLBACK_URL}
             )
         except Exception as e:
             print(f"Error fetching request token: {str(e)}")
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=token_error')
         
-        # Store request token in session
-        session['request_token'] = request_token
+        # Store tokens in session
+        session['oauth_token'] = fetch_response.get('oauth_token')
+        session['oauth_token_secret'] = fetch_response.get('oauth_token_secret')
         
-        # Generate state
+        # Generate and store state
         state = secrets.token_urlsafe(32)
         session['oauth_state'] = state
         
-        # Get authorization url
-        authorization_url = twitter.authorization_url(
-            'https://api.twitter.com/oauth/authorize'
+        # Get authorization URL
+        auth_url = oauth.authorization_url(
+            'https://api.twitter.com/oauth/authorize',
+            state=state
         )
         
-        # Add state parameter
-        authorization_url = f"{authorization_url}&state={state}"
-        
-        return redirect(authorization_url)
+        return redirect(auth_url)
         
     except Exception as e:
         print(f"Error during Twitter login: {str(e)}")
@@ -99,47 +99,45 @@ def callback():
             print("State verification failed")
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=invalid_state')
         
-        # Get the oauth token and verifier
-        oauth_token = request.args.get('oauth_token')
+        # Get the oauth verifier
         oauth_verifier = request.args.get('oauth_verifier')
+        if not oauth_verifier:
+            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=missing_verifier')
+
+        # Get stored tokens
+        oauth_token = session.get('oauth_token')
+        oauth_token_secret = session.get('oauth_token_secret')
         
-        if not oauth_token or not oauth_verifier:
+        if not oauth_token or not oauth_token_secret:
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=missing_token')
 
-        # Get the request token from session
-        request_token = session.get('request_token')
-        if not request_token:
-            return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=no_request_token')
-
-        # Create OAuth1Session for verifying credentials
-        twitter = OAuth1Session(
+        # Create OAuth1Session with verifier
+        oauth = OAuth1Session(
             client_key=TWITTER_API_KEY,
             client_secret=TWITTER_API_SECRET,
             resource_owner_key=oauth_token,
-            resource_owner_secret=request_token['oauth_token_secret'],
+            resource_owner_secret=oauth_token_secret,
             verifier=oauth_verifier
         )
 
         try:
             # Get the access token
-            access_tokens = twitter.fetch_access_token(
-                'https://api.twitter.com/oauth/access_token'
-            )
+            oauth_tokens = oauth.fetch_access_token('https://api.twitter.com/oauth/access_token')
         except Exception as e:
             print(f"Error fetching access token: {str(e)}")
             return redirect('https://human-memecoin.github.io/human-coin/marketing.html?error=access_token_error')
 
         # Create new session with access token
-        twitter = OAuth1Session(
+        oauth = OAuth1Session(
             client_key=TWITTER_API_KEY,
             client_secret=TWITTER_API_SECRET,
-            resource_owner_key=access_tokens['oauth_token'],
-            resource_owner_secret=access_tokens['oauth_token_secret']
+            resource_owner_key=oauth_tokens.get('oauth_token'),
+            resource_owner_secret=oauth_tokens.get('oauth_token_secret')
         )
 
         try:
             # Get user profile information
-            response = twitter.get(
+            response = oauth.get(
                 'https://api.twitter.com/1.1/account/verify_credentials.json',
                 params={'include_email': 'true', 'skip_status': 'true'}
             )
@@ -156,8 +154,8 @@ def callback():
         # Store user information in session
         session['user_id'] = user_info['id_str']
         session['twitter_handle'] = user_info['screen_name']
-        session['access_token'] = access_tokens['oauth_token']
-        session['access_token_secret'] = access_tokens['oauth_token_secret']
+        session['access_token'] = oauth_tokens.get('oauth_token')
+        session['access_token_secret'] = oauth_tokens.get('oauth_token_secret')
         session.permanent = True
 
         # Store user in database
@@ -208,9 +206,10 @@ def callback():
         finally:
             conn.close()
 
-        # Clear oauth state and request token
+        # Clear oauth state and tokens
         session.pop('oauth_state', None)
-        session.pop('request_token', None)
+        session.pop('oauth_token', None)
+        session.pop('oauth_token_secret', None)
 
         # Redirect to dashboard
         return redirect('https://human-memecoin.github.io/human-coin/dashboard/index.html?login=success')
